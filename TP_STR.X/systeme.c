@@ -30,7 +30,7 @@ void __interrupt(high_priority) fonction_d_interruption(void)
     {
         if (DEMARRAGE==1)
         {
-            STKPTR=17;// Au d�marrage du syst�me on initialise STKPTR
+            STKPTR=27;// Au d�marrage du syst�me on initialise STKPTR
             DEMARRAGE=0;
         }
 
@@ -140,12 +140,12 @@ void initialisation_du_systeme(void)
     DEMARRAGE=1;
 
     /* Ordre de d�part des taches */
-    // queue[0]=TACHE1;
-    // queue[1]=TACHE2;
-    // queue[2]=TACHE3;
+    queue[0]=TACHE1;
+    queue[1]=TACHE2;
+    queue[2]=TACHE3;
     queue[3]=TACHE4;
-    // queue[4]=TACHE5;
-    // queue[5]=TACHE6;
+    queue[4]=TACHE5;
+    queue[5]=TACHE6;
 
     pointeur_de_tache=NOMBRE_DE_TACHES-1;
     tache_active=queue[pointeur_de_tache];
@@ -157,22 +157,22 @@ void initialisation_du_systeme(void)
 
     // La pile est initialis�e avec l'adresse de d�but de chaque t�che
 
-    // STKPTR=2;TOS_EGAL_FUNC(tache1);
-    // STKPTR=7;TOS_EGAL_FUNC(tache2);
-    // STKPTR=12;TOS_EGAL_FUNC(tache3);
+    STKPTR=2;TOS_EGAL_FUNC(tache1);
+    STKPTR=7;TOS_EGAL_FUNC(tache2);
+    STKPTR=12;TOS_EGAL_FUNC(tache3);
     STKPTR=17;TOS_EGAL_FUNC(tache4);
-    // STKPTR=22;TOS_EGAL_FUNC(tache5);
-    // STKPTR=27;TOS_EGAL_FUNC(tache6);
+    STKPTR=22;TOS_EGAL_FUNC(tache5);
+    STKPTR=27;TOS_EGAL_FUNC(tache6);
 
     STKPTR=temp;
 
     //initialisation du pointeur de pile de chaque contexte
-    // STKPTR_T1=2;
-    // STKPTR_T2=7;
-    // STKPTR_T3=12;
+    STKPTR_T1=2;
+    STKPTR_T2=7;
+    STKPTR_T3=12;
     STKPTR_T4=17;
-    // STKPTR_T5=22;
-    // STKPTR_T6=27;
+    STKPTR_T5=22;
+    STKPTR_T6=27;
 
     /* Configuration du timer0 associ� � l'ordonanceur */
     Tick_Count=0;
