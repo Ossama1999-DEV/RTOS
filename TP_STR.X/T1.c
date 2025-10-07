@@ -61,13 +61,42 @@ void tache1(void)
         else
             draw_char('0');
 
+        /**!
+         * Controle de vitesse
+         */
         goto_lico(5,0);
-        draw_string("Vitesse:");
-        if (VITESSE_PLUS==0)
+        draw_string((unsigned char*)"Vitesse:");
+
+        if (VITESSE_PLUS == 0 && vitesse < 255)
             vitesse++;
-        if (VITESSE_MOINS==0)
+        if (VITESSE_MOINS == 0 && vitesse > 0)
             vitesse--;
+
         draw_hex8(vitesse);
+
+        // ===== AJOUT : alerte si > 30 km/h =====
+        if (vitesse > 30) {
+            // clear_graphics();        // fond rouge si géré, puis réafficher l'écran
+
+            // Indicateur visuel via LEDs (sécurité)
+            LED_R = 0;   // Rouge ON
+            LED_G = 1;   // Vert OFF
+            LED_B = 1;   // Bleu OFF
+
+            // Message d'alerte
+            goto_lico(6,0);
+            draw_string((unsigned char*)"ALERTE: >30 km/h");
+        } else {
+            // Etat normal (vert)
+            LED_R = 1;
+            LED_G = 0;   // Vert ON
+            LED_B = 1;
+
+            // Efface juste la ligne d'alerte si elle etait affichée
+            goto_lico(6,0);
+            draw_string((unsigned char*)"                 ");
+        }
+
 
         goto_lico(6,0);
         draw_string("Batterie:");
