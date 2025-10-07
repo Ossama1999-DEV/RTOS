@@ -28,14 +28,6 @@ void tache1(void)
     TP_appui = 0;
 
     // Gestion du badge
-    if (n_octet_badge == 0)
-    {
-        goto_lico(0,0);
-        draw_string("Inserez carte:");
-    }
-    else
-    {
-        clear_graphics();
         goto_lico(0,0);
         draw_string("Marche:");
         if (MARCHE_AVANT == 0)
@@ -162,4 +154,3 @@ void tache1(void)
             Nop();
         }
     }
-}
