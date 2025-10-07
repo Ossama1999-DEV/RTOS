@@ -30,7 +30,7 @@ void __interrupt(high_priority) fonction_d_interruption(void)
     {
         if (DEMARRAGE==1)
         {
-            STKPTR=27;// Au d�marrage du syst�me on initialise STKPTR
+            STKPTR=17;// Au d�marrage du syst�me on initialise STKPTR
             DEMARRAGE=0;
         }
 
@@ -125,12 +125,12 @@ void __interrupt(high_priority) fonction_d_interruption(void)
     //on est oblig� de mettre manuellement RETFIE
     // RETFIE 0 => On ne restitue pas les registers shadow W,STATUS,BSR
     // puisque ceux qui ont �t� sauv�s sont ceux de la tache pr�c�dente
-    // tache1();//
-    // tache2();//
-    // tache3();// Les taches sont lanc�es ici pour qu'elles soient prises
+    tache1();//
+    tache2();//
+    tache3();// Les taches sont lanc�es ici pour qu'elles soient prises
     tache4();// en compte, car comme elles ne sont appel�es nulle part
-    // tache5();// ailleur, le compilateur les aurait ignor�es.
-    // tache6();//
+    tache5();// ailleur, le compilateur les aurait ignor�es.
+    tache6();//
 }
 
 void initialisation_du_systeme(void)
@@ -143,7 +143,7 @@ void initialisation_du_systeme(void)
     // queue[0]=TACHE1;
     // queue[1]=TACHE2;
     // queue[2]=TACHE3;
-    queue[0]=TACHE4;
+    queue[3]=TACHE4;
     // queue[4]=TACHE5;
     // queue[5]=TACHE6;
 
