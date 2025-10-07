@@ -1,4 +1,3 @@
-
 #include "stid.h"
 
 
@@ -6,7 +5,7 @@ unsigned char lecture_normale(unsigned char * stid_id)
 {
     unsigned char temps_attente,n_octet,n_bit,octet;
 
-    STID_SENS_DATA=1;//DATA en entrée
+    STID_SENS_DATA=1;//DATA en entree
     STID_READ=0;
     STID_CLOCK=0;
     stid_delai_us(100);

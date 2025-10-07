@@ -1,3 +1,9 @@
+/**!
+ * \file T2.c
+ * \brief Tache 2 : Gestion de l'ecran tactile
+ * \author DBIBIH Oussama
+ */
+
 #include "T2.h"
 
 void tache2(void)
@@ -9,15 +15,15 @@ void tache2(void)
 
     while(1)
     {
-        DRIVEA=1;// Right=Vcc Left=GND Top en l'air
-        DRIVEB=0;// Bottom en l'air
-        tp_delai(3000);// Délai d'établissement du signal ~= 3000 us
+        DRIVEA=1; // Right=Vcc Left=GND Top en l'air
+        DRIVEB=0; // Bottom en l'air
+        tp_delai(3000); // DÃ©lai d'Ã©tablissement du signal ~= 3000 us
 
         //P(SEM_CAN);
 
         ADCON2=0x16; // Fosc/64 Tacq=4TAD
         ADCON0=0x01; // Module AD ON channel 0 (X)
-        ADCON0=0x03; //Début de conversion
+        ADCON0=0x03; //DÃ©marrage de conversion
         while(ADCON0bits.DONE==1)
             ;
         hx=ADRESH;
@@ -25,20 +31,20 @@ void tache2(void)
 
         //V(SEM_CAN);
 
-        if ((lx&0x0F)!=0){hx=0;lx=0;}// Si tension négative
+        if ((lx&0x0F)!=0){hx=0;lx=0;}// Si tension nÃ©gative
 
 
         if (hx>=10)
         {
-            DRIVEA=0;// Right en l'air Left en l'air Top=Vcc
-            DRIVEB=1;// Bottom=GND
-            tp_delai(3000);// Délai d'établissement du signal ~= 3000 us
+            DRIVEA=0; // Right en l'air Left en l'air Top=Vcc
+            DRIVEB=1; // Bottom=GND
+            tp_delai(3000); // DÃ©lai d'Ã©tablissement du signal ~= 3000 us
 
             //P(SEM_CAN);
 
             ADCON2=0x16; // Fosc/64 Tacq=4TAD
             ADCON0=0x05; // Module AD ON channel 1 (Y)
-            ADCON0=0x07; //Début de conversion
+            ADCON0=0x07; //Dï¿½but de conversion
             while(ADCON0bits.DONE==1)
                 ;
             hy=ADRESH;
@@ -46,7 +52,7 @@ void tache2(void)
 
             //V(SEM_CAN);
 
-            if ((ly&0x0F)!=0){hy=0;ly=0;}// Si tension négative
+            if ((ly&0x0F)!=0){hy=0;ly=0;}// Si tension nÃ©gative
 
             if (hy>=20)
             {

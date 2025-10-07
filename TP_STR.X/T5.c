@@ -1,3 +1,8 @@
+/**!
+ * \file T5.c
+ * \brief Tache 5 : Envoi regulier du message "tache5_encours" sur le port serie
+ * \author DBIBIH Oussama
+ */
 #include "T5.h"
 
 void tache5(void)

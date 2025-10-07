@@ -1,10 +1,15 @@
+/**!
+ * \file systeme.c
+ * \brief Gestion du systÃ¨me d'ordonnancement
+ * \author DBIBIH Oussama
+ */
 #include "systeme.h"
 
 
 //fptr pointe sur la fonction choisie
-//val_tos reçoit l'adresse de la fonction
+//val_tos reï¿½oit l'adresse de la fonction
 //puc pointe sur l'octet poid faible
-//TOS est mis à jour octet par octet
+//TOS est mis ï¿½ jour octet par octet
 
 #define TOS_EGAL_FUNC(fonction) fptr=&fonction;\
                         val_tos=(unsigned short int) fptr;\
@@ -16,7 +21,7 @@
 
 void __interrupt(high_priority) fonction_d_interruption(void)
 {
-// Sauvegarde de registres sensibles (ils sont modifiés au cours du changement de tache)
+// Sauvegarde de registres sensibles (ils sont modifiï¿½s au cours du changement de tache)
     STATUS_TEMPORAIRE=STATUS; W_TEMPORAIRE=WREG; BSR_TEMPORAIRE=BSR;
     FSR0H_TEMPORAIRE=FSR0H; FSR0L_TEMPORAIRE=FSR0L;
 
@@ -25,7 +30,7 @@ void __interrupt(high_priority) fonction_d_interruption(void)
     {
         if (DEMARRAGE==1)
         {
-            STKPTR=27;// Au démarrage du système on initialise STKPTR
+            STKPTR=27;// Au dï¿½marrage du systï¿½me on initialise STKPTR
             DEMARRAGE=0;
         }
 
@@ -39,8 +44,8 @@ void __interrupt(high_priority) fonction_d_interruption(void)
         POSTINC0=TBLPTRU; POSTINC0=TBLPTRH; POSTINC0=TBLPTRL; POSTINC0=TABLAT;
         POSTINC0=PCLATU; POSTINC0=PCLATH;
 // Fin de sauvegarde des registres (18 registres)
-// Debut de sauvegarde des zones utilisées par le compilateur
-// FSR1 va servir à balayer la zone 0x00 à 0x2F
+// Debut de sauvegarde des zones utilisï¿½es par le compilateur
+// FSR1 va servir ï¿½ balayer la zone 0x00 ï¿½ 0x2F
         FSR1H=0;
         FSR1L=0;
         POSTINC0=POSTINC1;POSTINC0=POSTINC1;POSTINC0=POSTINC1;POSTINC0=POSTINC1;
@@ -57,12 +62,12 @@ void __interrupt(high_priority) fonction_d_interruption(void)
         POSTINC0=POSTINC1;POSTINC0=POSTINC1;POSTINC0=POSTINC1;POSTINC0=POSTINC1;
         POSTINC0=POSTINC1;POSTINC0=POSTINC1;POSTINC0=POSTINC1;POSTINC0=POSTINC1;
         POSTINC0=POSTINC1;POSTINC0=POSTINC1;POSTINC0=POSTINC1;POSTINC0=POSTINC1;
-// Fin de sauvegarde des zones utilisées par le compilateur
+// Fin de sauvegarde des zones utilisï¿½es par le compilateur
 
-        TMR0=(0xFFFF-30000);// l'IT se redéclenchera dans 10ms
+        TMR0=(0xFFFF-30000);// l'IT se redï¿½clenchera dans 10ms
         T0IF=0;   // effacement du flag pour attendre la prochaine it
 
-        Tick_Count++;// Incrémentation du compteur de tick
+        Tick_Count++;// Incrï¿½mentation du compteur de tick
 
         pointeur_de_tache++;                        //
         if (pointeur_de_tache==NOMBRE_DE_TACHES)    // Evolution du cycle des taches
@@ -70,12 +75,12 @@ void __interrupt(high_priority) fonction_d_interruption(void)
         tache_active=queue[pointeur_de_tache];      //
 
  // Restauration du contexte de la tache active
-// Debut de restauration des zones utilisées par le compilateur
-// FSR1 va servir à balayer la zone 0x00 à 0x2F
+// Debut de restauration des zones utilisï¿½es par le compilateur
+// FSR1 va servir ï¿½ balayer la zone 0x00 ï¿½ 0x2F
         FSR1H=0;
         FSR1L=0;
         FSR0H=tache_active;
-        FSR0L=18;// acces à la zone compilateur de la tache à restaurer
+        FSR0L=18;// acces ï¿½ la zone compilateur de la tache ï¿½ restaurer
         POSTINC1=POSTINC0;POSTINC1=POSTINC0;POSTINC1=POSTINC0;POSTINC1=POSTINC0;
         POSTINC1=POSTINC0;POSTINC1=POSTINC0;POSTINC1=POSTINC0;POSTINC1=POSTINC0;
         POSTINC1=POSTINC0;POSTINC1=POSTINC0;POSTINC1=POSTINC0;POSTINC1=POSTINC0;
@@ -90,9 +95,9 @@ void __interrupt(high_priority) fonction_d_interruption(void)
         POSTINC1=POSTINC0;POSTINC1=POSTINC0;POSTINC1=POSTINC0;POSTINC1=POSTINC0;
         POSTINC1=POSTINC0;POSTINC1=POSTINC0;POSTINC1=POSTINC0;POSTINC1=POSTINC0;
         POSTINC1=POSTINC0;POSTINC1=POSTINC0;POSTINC1=POSTINC0;POSTINC1=POSTINC0;
-// Fin de sauvegarde des zones utilisées par le compilateur
+// Fin de sauvegarde des zones utilisï¿½es par le compilateur
 
-//accès à la zone du contexte (partie registres) de la tache
+//accï¿½s ï¿½ la zone du contexte (partie registres) de la tache
         FSR0H=tache_active;
         FSR0L=0;
 
@@ -107,9 +112,9 @@ void __interrupt(high_priority) fonction_d_interruption(void)
         WREG=W_TEMPORAIRE; STATUS=STATUS_TEMPORAIRE;
 
         asm("RETFIE");// Le compilateur ne sait pas que c'est une fonction IT
-        //on est obligé de mettre manuellement RETFIE
+        //on est obligï¿½ de mettre manuellement RETFIE
         // RETFIE 0 => On ne restitue pas les registers shadow W,STATUS,BSR
-        // puisque ceux qui ont été sauvés sont ceux de la tache précédente
+        // puisque ceux qui ont ï¿½tï¿½ sauvï¿½s sont ceux de la tache prï¿½cï¿½dente
     }
 
 //Restitution des registres courants
@@ -117,14 +122,14 @@ void __interrupt(high_priority) fonction_d_interruption(void)
     WREG=W_TEMPORAIRE; STATUS=STATUS_TEMPORAIRE;
 
     asm("RETFIE");// Le compilateur ne sait pas que c'est une fonction IT
-    //on est obligé de mettre manuellement RETFIE
+    //on est obligï¿½ de mettre manuellement RETFIE
     // RETFIE 0 => On ne restitue pas les registers shadow W,STATUS,BSR
-    // puisque ceux qui ont été sauvés sont ceux de la tache précédente
+    // puisque ceux qui ont ï¿½tï¿½ sauvï¿½s sont ceux de la tache prï¿½cï¿½dente
     tache1();//
     tache2();//
-    tache3();// Les taches sont lancées ici pour qu'elles soient prises
-    tache4();// en compte, car comme elles ne sont appelées nulle part
-    tache5();// ailleur, le compilateur les aurait ignorées.
+    tache3();// Les taches sont lancï¿½es ici pour qu'elles soient prises
+    tache4();// en compte, car comme elles ne sont appelï¿½es nulle part
+    tache5();// ailleur, le compilateur les aurait ignorï¿½es.
     tache6();//
 }
 
@@ -134,7 +139,7 @@ void initialisation_du_systeme(void)
 
     DEMARRAGE=1;
 
-    /* Ordre de départ des taches */
+    /* Ordre de dï¿½part des taches */
     queue[0]=TACHE1;
     queue[1]=TACHE2;
     queue[2]=TACHE3;
@@ -144,13 +149,13 @@ void initialisation_du_systeme(void)
 
     pointeur_de_tache=NOMBRE_DE_TACHES-1;
     tache_active=queue[pointeur_de_tache];
-    // démarrage en tache 6
-    // la première tache exécutée sera la tache 1
+    // dï¿½marrage en tache 6
+    // la premiï¿½re tache exï¿½cutï¿½e sera la tache 1
 
-    /* Création de la pile associée au taches */
+    /* Crï¿½ation de la pile associï¿½e au taches */
     temp=STKPTR;
 
-    // La pile est initialisée avec l'adresse de début de chaque tâche
+    // La pile est initialisï¿½e avec l'adresse de dï¿½but de chaque tï¿½che
 
     STKPTR=2;TOS_EGAL_FUNC(tache1);
     STKPTR=7;TOS_EGAL_FUNC(tache2);
@@ -169,7 +174,7 @@ void initialisation_du_systeme(void)
     STKPTR_T5=22;
     STKPTR_T6=27;
 
-    /* Configuration du timer0 associé à l'ordonanceur */
+    /* Configuration du timer0 associï¿½ ï¿½ l'ordonanceur */
     Tick_Count=0;
     //T0CON=0x08;//16 bit, no prescaler, OFF, 5.46ms period
     T0CON=0x01;//16 bit, 1:4 Prescaler, 22ms period

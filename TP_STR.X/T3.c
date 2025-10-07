@@ -1,3 +1,8 @@
+/**!
+ * \file T3.c
+ * \brief Tache 3 : Gestion des LEDs RVB en fonction de l'ecran tactile
+ * \author DBIBIH Oussama
+ */
 #include "T3.h"
 
 void tache3(void)
