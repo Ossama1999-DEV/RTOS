@@ -28,6 +28,10 @@ void tache1(void)
 
     while(1)
     {
+        if (n_octet_badge == 0){
+            draw_string("Inserez carte:");
+        }
+        else if(n_octet_badge == 1) {
 
         goto_lico(0,0);
         draw_string("Marche:");
@@ -54,12 +58,56 @@ void tache1(void)
         draw_string("Temp. Huile:");
         draw_hex8(lecture_8bit_analogique(TEMPERATURE_HUILE));
 
+        /**!
+         * Gere le choc
+         */
         goto_lico(4,0);
-        draw_string("Choc:");
-        if (CHOC==0)
+        draw_string((unsigned char*)"Choc:");
+
+        if (CHOC == 0) {
             draw_char('1');
-        else
+
+            // Petit clignotement sans bloquer : on divise la fréquence d'appel
+            static unsigned char blink_div = 0;
+            static unsigned char blink_state = 0;
+
+            if (++blink_div >= 20) {   // ajuste 20 pour changer la vitesse du blink
+                blink_div = 0;
+                blink_state ^= 1;      // toggle 0/1
+            }
+
+            if (blink_state) {
+                // Mode ALERTE : LED rouge ON
+                LED_R = 0; LED_G = 1; LED_B = 1;
+
+                // Si ta lib GLCD gère la couleur de fond, tu peux décommenter :
+                // set_color(255, 0, 0);
+                // clear_graphics();
+                // goto_lico(0,0);
+                draw_string("!!! ALERTE CHOC !!!");
+            } else {
+                // Etat alterné (pour clignoter) : repasse en "normal"
+                LED_R = 1; LED_G = 0; LED_B = 1;
+            }
+
+            // Ligne d'alerte (clignote)
+            goto_lico(7,0);
+            if (blink_state)
+                draw_string((unsigned char*)"!!! ALERTE CHOC !!!");
+            else
+                draw_string((unsigned char*)"                   "); // efface la ligne
+
+        } else {
             draw_char('0');
+
+            // Retour etat normal
+            LED_R = 1; LED_G = 0; LED_B = 1;
+
+            // Nettoie la ligne d'alerte si elle etait affichee
+            goto_lico(7,0);
+            draw_string((unsigned char*)"                   ");
+        }
+
 
         /**!
          * Controle de vitesse
@@ -97,8 +145,7 @@ void tache1(void)
             draw_string((unsigned char*)"                 ");
         }
 
-
-        goto_lico(6,0);
+        goto_lico(7,0);
         draw_string("Batterie:");
         if (BATTERIE_PLUS==0)
             batterie++;
@@ -106,13 +153,13 @@ void tache1(void)
             batterie--;
         draw_hex8(batterie);
 
-        goto_lico(7,0);
+        goto_lico(8,0);
         if (FREIN_A_MAIN==0)
             draw_string("((!))");
         else
             draw_string("     ");
 
-        goto_lico(8,0);
+        goto_lico(9,0);
         draw_string("Badge:");
         if (n_octet_badge==0)
             draw_string(" AUCUN              ");
@@ -124,15 +171,15 @@ void tache1(void)
             }
         }
 
-        goto_lico(9,0);
+        goto_lico(10,0);
         draw_string("X-Joystick:");
         draw_dec8(lecture_8bit_analogique(JOYSTICK_X));
 
-        goto_lico(10,0);
+        goto_lico(11,0);
         draw_string("Y-Joystick:");
         draw_dec8(lecture_8bit_analogique(JOYSTICK_Y));
-
-        if (TP_appui==1)
+        }
+        else if (TP_appui==1)
         {
             goto_lico(0,20);
             draw_string("x=");
