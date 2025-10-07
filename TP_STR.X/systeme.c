@@ -167,12 +167,12 @@ void initialisation_du_systeme(void)
     STKPTR=temp;
 
     //initialisation du pointeur de pile de chaque contexte
-    STKPTR_T1=2;
-    STKPTR_T2=7;
-    STKPTR_T3=12;
+    // STKPTR_T1=2;
+    // STKPTR_T2=7;
+    // STKPTR_T3=12;
     STKPTR_T4=17;
-    STKPTR_T5=22;
-    STKPTR_T6=27;
+    // STKPTR_T5=22;
+    // STKPTR_T6=27;
 
     /* Configuration du timer0 associ� � l'ordonanceur */
     Tick_Count=0;
