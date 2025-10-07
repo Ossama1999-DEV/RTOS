@@ -48,19 +48,19 @@ void tache4(void)
 
         goto_lico(4, 0);
         draw_string("Temp. Eau : ");
-        draw_hex8(temp_eau);
+        draw_hex8(lecture_8bit_analogique(TEMPERATURE_EAU));
         draw_string(" C");
 
         goto_lico(5, 0);
         draw_string("Temp. Huile : ");
-        draw_hex8(temp_huile);
+        draw_hex8(lecture_8bit_analogique(TEMPERATURE_HUILE)); // return la lecture du capteur de température d'huile
         draw_string(" C");
 
         goto_lico(6, 0);
         draw_string("Joystick X=");
-        draw_hex8(joystick_x);
+        draw_dec8(lecture_8bit_analogique(JOYSTICK_X)); // return la lecture du joystick en X
         draw_string(" Y=");
-        draw_hex8(joystick_y);
+        draw_dec8(lecture_8bit_analogique(JOYSTICK_Y)); // return la lecture du joystick en Y
 
         // === Étape 4 : Alerte vitesse (affichage rouge si > 30 km/h) ===
         if (vitesse > 30)
