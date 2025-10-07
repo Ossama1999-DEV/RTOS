@@ -34,12 +34,46 @@ void tache1(void)
         // === Marche ===
         goto_lico(0, 0);
         draw_string((unsigned char*)"Marche:");
+
         if (MARCHE_AVANT == 0)
+        {
             draw_string((unsigned char*)"AV");
+
+            // === Écran vert (marche avant) ===
+            LED_R = 1;  // OFF
+            LED_G = 0;  // ON
+            LED_B = 1;  // OFF
+
+            // Si ta lib gère la couleur de fond :
+            // set_color(0, 255, 0);    // vert
+            // clear_graphics();
+        }
         else if (MARCHE_ARRIERE == 0)
+        {
             draw_string((unsigned char*)"AR");
+
+            // === Écran jaune (marche arrière) ===
+            LED_R = 0;  // ON
+            LED_G = 0;  // ON
+            LED_B = 1;  // OFF
+
+            // Si ta lib gère la couleur de fond :
+            // set_color(255, 255, 0);  // jaune
+            // clear_graphics();
+        }
         else
+        {
             draw_string((unsigned char*)"N ");
+
+            // === Neutre ===
+            LED_R = 1;
+            LED_G = 1;
+            LED_B = 1;
+
+            // Si ta lib gère la couleur de fond :
+            // set_color(255, 255, 255); // blanc
+            // clear_graphics();
+        }
 
         // === Siege ===
         goto_lico(1, 0);
@@ -98,16 +132,87 @@ void tache1(void)
         // === Batterie ===
         goto_lico(8, 0);
         draw_string((unsigned char*)"Batterie:");
-        if (BATTERIE_PLUS == 0) batterie++;
-        if (BATTERIE_MOINS == 0) batterie--;
+
+        // Variation manuelle
+        if (BATTERIE_PLUS == 0)
+            batterie++;
+        if (BATTERIE_MOINS == 0 && batterie > 0)
+            batterie--;
+
+        // Alerte batterie faible
+        if (batterie < 30)
+        {
+            // === Écran rouge (batterie faible) ===
+            LED_R = 0;  // ON
+            LED_G = 1;  // OFF
+            LED_B = 1;  // OFF
+
+            // Si ta lib gère la couleur de fond :
+            // set_color(255, 0, 0); // rouge
+            // clear_graphics();
+
+            goto_lico(9, 0);
+            draw_string((unsigned char*)"!!! BATTERIE FAIBLE !!!");
+        }
+        else
+        {
+            // Rétablir couleurs normales
+            LED_R = 1;
+            LED_G = 0;  // vert ON
+            LED_B = 1;
+
+            // Effacer le message précédent
+            goto_lico(9, 0);
+            draw_string((unsigned char*)"                       ");
+        }
+
+        // Affichage du niveau
         draw_hex8(batterie);
+
 
         // === Frein à main ===
         goto_lico(9, 0);
+        draw_string((unsigned char*)"Frein:");
+
+        // Si le frein à main est serré
         if (FREIN_A_MAIN == 0)
+        {
             draw_string((unsigned char*)"((!))");
+
+            // === Écran rouge (alerte) ===
+            LED_R = 0;  // ON
+            LED_G = 1;  // OFF
+            LED_B = 1;  // OFF
+
+            // Si ta lib gère la couleur de fond :
+            // set_color(255, 0, 0);
+            // clear_graphics();
+
+            goto_lico(10, 0);
+            draw_string((unsigned char*)"ENLEVEZ FREIN A MAIN");
+
+            // Empêche la marche avant
+            if (MARCHE_AVANT == 0)
+            {
+                // Neutralise la commande
+                draw_string((unsigned char*)" - BLOQUE -");
+                vitesse = 0;  // sécurité : force l'arrêt
+            }
+        }
         else
+        {
             draw_string((unsigned char*)"     ");
+
+            // État normal : vert
+            LED_R = 1;
+            LED_G = 0;
+            LED_B = 1;
+
+            // Nettoie le message d’alerte
+            goto_lico(10, 0);
+            draw_string((unsigned char*)"                     ");
+        }
+
 
         // === Badge ===
         goto_lico(10, 0);
