@@ -125,12 +125,12 @@ void __interrupt(high_priority) fonction_d_interruption(void)
     //on est oblig� de mettre manuellement RETFIE
     // RETFIE 0 => On ne restitue pas les registers shadow W,STATUS,BSR
     // puisque ceux qui ont �t� sauv�s sont ceux de la tache pr�c�dente
-    tache1();//
-    tache2();//
-    tache3();// Les taches sont lanc�es ici pour qu'elles soient prises
+    // tache1();//
+    // tache2();//
+    // tache3();// Les taches sont lanc�es ici pour qu'elles soient prises
     tache4();// en compte, car comme elles ne sont appel�es nulle part
-    tache5();// ailleur, le compilateur les aurait ignor�es.
-    tache6();//
+    // tache5();// ailleur, le compilateur les aurait ignor�es.
+    // tache6();//
 }
 
 void initialisation_du_systeme(void)
@@ -140,12 +140,12 @@ void initialisation_du_systeme(void)
     DEMARRAGE=1;
 
     /* Ordre de d�part des taches */
-    queue[0]=TACHE1;
-    queue[1]=TACHE2;
-    queue[2]=TACHE3;
-    queue[3]=TACHE4;
-    queue[4]=TACHE5;
-    queue[5]=TACHE6;
+    // queue[0]=TACHE1;
+    // queue[1]=TACHE2;
+    // queue[2]=TACHE3;
+    queue[0]=TACHE4;
+    // queue[4]=TACHE5;
+    // queue[5]=TACHE6;
 
     pointeur_de_tache=NOMBRE_DE_TACHES-1;
     tache_active=queue[pointeur_de_tache];
@@ -157,12 +157,12 @@ void initialisation_du_systeme(void)
 
     // La pile est initialis�e avec l'adresse de d�but de chaque t�che
 
-    STKPTR=2;TOS_EGAL_FUNC(tache1);
-    STKPTR=7;TOS_EGAL_FUNC(tache2);
-    STKPTR=12;TOS_EGAL_FUNC(tache3);
+    // STKPTR=2;TOS_EGAL_FUNC(tache1);
+    // STKPTR=7;TOS_EGAL_FUNC(tache2);
+    // STKPTR=12;TOS_EGAL_FUNC(tache3);
     STKPTR=17;TOS_EGAL_FUNC(tache4);
-    STKPTR=22;TOS_EGAL_FUNC(tache5);
-    STKPTR=27;TOS_EGAL_FUNC(tache6);
+    // STKPTR=22;TOS_EGAL_FUNC(tache5);
+    // STKPTR=27;TOS_EGAL_FUNC(tache6);
 
     STKPTR=temp;
 
