@@ -31,21 +31,22 @@ void tache1(void)
         if (n_octet_badge == 0)
         {
             goto_lico(0,0);
-            draw_string((unsigned char*)"Inserez carte:");
+            draw_string("Inserez carte:");
         }
-        else if (n_octet_badge == 1)
+        else if (n_octet_badge != 1)
         {
+            clear_graphics();
             goto_lico(0,0);
-            draw_string((unsigned char*)"Marche:");
+            draw_string("Marche:");
             if (MARCHE_AVANT == 0)
-                draw_string((unsigned char*)"AV");
+                draw_string("AV");
             else if (MARCHE_ARRIERE == 0)
-                draw_string((unsigned char*)"AR");
+                draw_string("AR");
             else
-                draw_string((unsigned char*)"N ");
+                draw_string("N ");
 
             goto_lico(1,0);
-            draw_string((unsigned char*)"Siege:");
+            draw_string("Siege:");
             if (SIEGE == 0)
                 draw_char('1');
             else
@@ -129,25 +130,26 @@ void tache1(void)
             }
 
             goto_lico(10,0);
-            draw_string((unsigned char*)"X-Joystick:");
+            draw_string("X-Joystick:");
             draw_dec8(lecture_8bit_analogique(JOYSTICK_X));
 
             goto_lico(11,0);
-            draw_string((unsigned char*)"Y-Joystick:");
+            draw_string("Y-Joystick:");
             draw_dec8(lecture_8bit_analogique(JOYSTICK_Y));
-        }
-        else if (TP_appui == 1)
-        {
-            goto_lico(0,20);
-            draw_string((unsigned char*)"x=");
-            draw_dec8(TP_x);
-            draw_string((unsigned char*)" y=");
-            draw_dec8(TP_y);
-            plot1(TP_x, TP_y);
-        }
-        else
-        {
-            Nop();
+
+            if (TP_appui == 1)
+            {
+                goto_lico(0,20);
+                draw_string("x=");
+                draw_dec8(TP_x);
+                draw_string(" y=");
+                draw_dec8(TP_y);
+                plot1(TP_x, TP_y);
+            }
+            else
+            {
+                Nop();
+            }            
         }
     }
 }
