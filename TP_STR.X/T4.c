@@ -1,97 +1,98 @@
 /**!
  * \file T4.c
- * \brief TÃ¢che 4 : Supervision du chariot (affichage global + alerte vitesse)
+ * \brief Tâche 4 : Supervision + alerte >30 km/h
  * \author DBIBIH Oussama
  */
 
 #include "T4.h"
-#include "T1.h"          // Pour accÃ©der aux donnÃ©es globales de la T1
-#include "afficheur.h"   // Fonctions graphiques (draw_string, clear_graphics, goto_lico)
-#include "main.h"
+#include "afficheur.h"   // draw_string, clear_graphics, goto_lico, draw_dec8, draw_hex8...
+#include "main.h"        // LED_R/G/B, JOYSTICK_X/Y, TEMPERATURE_EAU/HUILE, VITESSE_PLUS/MOINS
 
-// === Variables globales externes provenant de T1 ===
-extern unsigned char vitesse;
-extern unsigned char temp_eau;
-extern unsigned char temp_huile;
-extern unsigned char joystick_x;
-extern unsigned char joystick_y;
+// vitesse : si elle est déjà définie ailleurs (T1), laisse cette ligne.
+// Sinon, décommente la définition locale plus bas (voir option B).
+
+static void uart_print(const char *s)
+{
+    while (*s)
+    {
+        while (PIR1bits.TX1IF == 0);
+        TXREG1 = *s++;
+        while (TXSTA1bits.TRMT == 0);
+    }
+}
 
 void tache4(void)
 {
-    unsigned int i;
+    unsigned int a;
 
     while (1)
     {
-        // === Ã‰tape 1 : Nettoyage + en-tÃªte clair ===
+        // 1) Nettoyage + en-tête
         clear_graphics();
         goto_lico(0, 0);
-        draw_string("=== SUPERVISION TACHE 4 ===");
+        draw_string((unsigned char*)"=== SUPERVISION T4 ===");
 
-        // === Ã‰tape 2 : Envoi sÃ©rie du message de statut ===
-        const char *msg = "TACHE4_ENCOURS\r\n";
-        const char *p = msg;
-        while (*p)
-        {
-            while (PIR1bits.TX1IF == 0);
-            TXREG1 = *p++;
-            while (TXSTA1bits.TRMT == 0);
-        }
+        // 2) Envoi série statut
+        uart_print("TACHE4_ENCOURS\r\n");
 
-        // === Ã‰tape 3 : Affichage des donnÃ©es de la T1 ===
+        // 3) Lecture des capteurs (comme T1, mais ici en T4)
+        unsigned char te = lecture_8bit_analogique(TEMPERATURE_EAU);
+        unsigned char th = lecture_8bit_analogique(TEMPERATURE_HUILE);
+        unsigned char jx = lecture_8bit_analogique(JOYSTICK_X);
+        unsigned char jy = lecture_8bit_analogique(JOYSTICK_Y);
+
+        // (Option B) Si tu veux gérer la vitesse UNIQUEMENT en T4,
+        // décommente ce bloc et COMENTE le 'extern unsigned char vitesse;' en haut.
+        /*
+        static unsigned char vitesse = 0;
+        if (VITESSE_PLUS == 0 && vitesse < 255) vitesse++;
+        if (VITESSE_MOINS == 0 && vitesse > 0)  vitesse--;
+        */
+
+        // 4) Affichage propre et aligné
         goto_lico(2, 0);
-        draw_string("Parametres Chariot :");
+        draw_string((unsigned char*)"Parametres :");
 
         goto_lico(3, 0);
-        draw_string("Vitesse : ");
-        draw_hex8(vitesse);
-        draw_string(" km/h");
+        draw_string((unsigned char*)"Vitesse : ");
+        draw_dec8(vitesse);
+        draw_string((unsigned char*)" km/h");
 
         goto_lico(4, 0);
-        draw_string("Temp. Eau : ");
-        draw_hex8(lecture_8bit_analogique(TEMPERATURE_EAU));
-        draw_string(" C");
+        draw_string((unsigned char*)"Temp. Eau : ");
+        draw_hex8(te);
+        draw_string((unsigned char*)" C");
 
         goto_lico(5, 0);
-        draw_string("Temp. Huile : ");
-        draw_hex8(lecture_8bit_analogique(TEMPERATURE_HUILE)); // return la lecture du capteur de tempÃ©rature d'huile
-        draw_string(" C");
+        draw_string((unsigned char*)"Temp. Huile : ");
+        draw_hex8(th);
+        draw_string((unsigned char*)" C");
 
         goto_lico(6, 0);
-        draw_string("Joystick X=");
-        draw_dec8(lecture_8bit_analogique(JOYSTICK_X)); // return la lecture du joystick en X
-        draw_string(" Y=");
-        draw_dec8(lecture_8bit_analogique(JOYSTICK_Y)); // return la lecture du joystick en Y
+        draw_string((unsigned char*)"Joystick X=");
+        draw_dec8(jx);
+        draw_string((unsigned char*)" Y=");
+        draw_dec8(jy);
 
-        // === Ã‰tape 4 : Alerte vitesse (affichage rouge si > 30 km/h) ===
+        // 5) Alerte > 30 km/h (LED rouge + message)
+        goto_lico(8, 0);
         if (vitesse > 30)
         {
-            LED_R = 0;   // Rouge ON
-            LED_G = 1;
-            LED_B = 1;
-
-            goto_lico(8, 0);
-            draw_string("!!! DANGER: VITESSE > 30 KM/H !!!");
-            goto_lico(9, 0);
-            draw_string("âš ï¸  RALENTIR IMMEDIATEMENT âš ï¸");
-
-            // Si ta lib le supporte :
-            // set_color(255, 0, 0);
-            // clear_graphics();
+            LED_R = 0; LED_G = 1; LED_B = 1;  // Rouge ON
+            draw_string((unsigned char*)"!!! DANGER: >30 km/h !!!");
+            // Si ta lib gère un fond rouge, tu pourrais faire:
+            // set_color(255, 0, 0); clear_graphics(); ... (mais optionnel)
         }
         else
         {
-            LED_R = 1;
-            LED_G = 0;   // Vert ON
-            LED_B = 1;
-
-            goto_lico(8, 0);
-            draw_string("Vitesse normale (<30 km/h)");
+            LED_R = 1; LED_G = 0; LED_B = 1;  // Vert ON
+            draw_string((unsigned char*)"Vitesse OK (<30 km/h)");
         }
 
-        // === Ã‰tape 5 : Ligne de sÃ©paration et boucle dâ€™attente ===
         goto_lico(10, 0);
-        draw_string("-----------------------------");
+        draw_string((unsigned char*)"-----------------------------");
 
-        for (i = 0; i < 65000; i++);  // Pause avant mise Ã  jour
+        // 6) Petite pause
+        for (a = 0; a < 65000; a++);
     }
 }
