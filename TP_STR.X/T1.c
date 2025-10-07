@@ -26,14 +26,11 @@ void tache1(void)
 
     TP_appui = 0;
 
-    while (1)
-    {
         if (n_octet_badge == 0)
         {
             goto_lico(0,0);
             draw_string("Inserez carte:");
-        }
-        else if (n_octet_badge != 1)
+        if (n_octet_badge != 1)
         {
             clear_graphics();
             goto_lico(0,0);
@@ -150,6 +147,6 @@ void tache1(void)
             {
                 Nop();
             }            
+        }            
         }
     }
-}
