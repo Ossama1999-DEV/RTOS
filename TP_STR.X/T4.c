@@ -1,8 +1,3 @@
-/**!
- * \file T4.c
- * \brief Tache 4 : Envoi regulier du message "TACHE4_ENCOURS" sur le port serie
- * \author DBIBIH Oussama
- */
 #include "T4.h"
 
 void tache4(void)

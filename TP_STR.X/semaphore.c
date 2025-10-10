@@ -1,8 +1,3 @@
-/**!
- * \file semaphore.c
- * \brief Gestion des s√©maphores pour la synchronisation des t√¢ches
- * \author DBIBIH Oussama
- */
 #include "semaphore.h"
 
 
@@ -27,13 +22,13 @@ void __reentrant P(unsigned char sem)
     switch(sem)
     {
         case SEM_CAN:
-            while (Val_sem_cna < 1) // Tant que le cna est occupÔøΩ
+            while (Val_sem_cna < 1) // Tant que le cna est occupÈ
                 ;                   // On attend
-            Val_sem_cna = 0;        // DÔøΩs qu'il est libre, on le rÔøΩserve
+            Val_sem_cna = 0;        // DËs qu'il est libre, on le rÈserve
         case SEM_RXTX:
-            while (Val_sem_rxtx < 1)    // Tant que la liaison sÔøΩrie est occupÔøΩ
+            while (Val_sem_rxtx < 1)    // Tant que la liaison sÈrie est occupÈ
                 ;                       // On attend
-            Val_sem_rxtx = 0;           // DÔøΩs qu'elle est libre, on la rÔøΩserve
+            Val_sem_rxtx = 0;           // DËs qu'elle est libre, on la rÈserve
         default:
             ;
     }
