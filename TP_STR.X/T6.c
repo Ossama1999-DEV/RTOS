@@ -1,8 +1,3 @@
-/**!
- * \file T6.c
- * \brief Tache 6 : Lecture du badge RFID
- * \author DBIBIH Oussama
- */
 #include "T6.h"
 
 void tache6(void)
