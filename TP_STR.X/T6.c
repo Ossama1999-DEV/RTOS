@@ -1,3 +1,9 @@
+/**!
+ * @file T6.c
+ * @author DBIBIH Oussama
+ * @brief Tache 6 : Lecture du badge
+ * @version 1.0
+ */
 #include "T6.h"
 
 void tache6(void)

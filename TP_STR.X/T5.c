@@ -1,3 +1,9 @@
+/**!
+ * @file T5.c
+ * @author DBIBIH Oussama
+ * @brief Tache 5 : Envoi d'un message sur le port série
+ * @version 1.0
+ */
 #include "T5.h"
 
 void tache5(void)

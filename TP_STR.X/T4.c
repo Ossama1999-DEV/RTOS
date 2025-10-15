@@ -1,3 +1,9 @@
+/**!
+ * @file T4.c
+ * @author DBIBIH Oussama
+ * @brief Tache 4 : Envoi d'un message sur le port série
+ * @version 1.0
+ */
 #include "T4.h"
 
 void tache4(void)
