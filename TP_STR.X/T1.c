@@ -1,11 +1,11 @@
-/**!
+#include "T1.h"
+
+/*!
  * \file T1.c
  * \brief Tâche 1 : Interface utilisateur
  * \author DBIBIH Oussama
  * \version 1.0
  */
-
- #include "T1.h"
 
 void tache1(void)
 {
@@ -53,9 +53,6 @@ void tache1(void)
             LED_R = 1;  // OFF
             LED_G = 0;  // ON
             LED_B = 1;  // OFF
-
-            // set_color(0, 255, 0);  // vert
-            // clear_graphics();
         }
         else if (MARCHE_ARRIERE == 0)
         {
@@ -65,9 +62,6 @@ void tache1(void)
             LED_R = 0;  // ON
             LED_G = 0;  // ON
             LED_B = 1;  // OFF
-
-            // set_color(255, 255, 0);  // jaune
-            // clear_graphics();
         }
         else
         {
@@ -77,9 +71,6 @@ void tache1(void)
             LED_R = 1;
             LED_G = 1;
             LED_B = 1;
-
-            // set_color(255, 255, 255);  // blanc
-            // clear_graphics();
         }
 
         // === Siege ===
@@ -114,18 +105,16 @@ void tache1(void)
             LED_R = 1; LED_G = 0; LED_B = 1;
 
             goto_lico(7, 0);
-            draw_string((unsigned char*)" ");
+            // efface proprement l’alerte choc (19+ caractères)
+            draw_string((unsigned char*)"                     ");
         }
 
         // === Vitesse ===
         goto_lico(5, 0);
         draw_string((unsigned char*)"Vitesse:");
 
-        if (VITESSE_PLUS == 0 && vitesse < 255)
-            vitesse++;
-
-        if (VITESSE_MOINS == 0 && vitesse > 0)
-            vitesse--;
+        if (VITESSE_PLUS == 0 && vitesse < 255) vitesse++;
+        if (VITESSE_MOINS == 0 && vitesse > 0)  vitesse--;
 
         draw_hex8(vitesse);
 
@@ -139,30 +128,23 @@ void tache1(void)
         {
             LED_R = 1; LED_G = 0; LED_B = 1;
             goto_lico(6, 0);
-            draw_string((unsigned char*)" ");
+            // efface le message "ALERTE: >30 km/h" (≥16 espaces)
+            draw_string((unsigned char*)"                  ");
         }
 
         // === Batterie ===
         goto_lico(8, 0);
         draw_string((unsigned char*)"Batterie:");
 
-        // Variation manuelle
-        if (BATTERIE_PLUS == 0)
-            batterie++;
+        if (BATTERIE_PLUS == 0)           batterie++;
+        if (BATTERIE_MOINS == 0 && batterie > 0) batterie--;
 
-        if (BATTERIE_MOINS == 0 && batterie > 0)
-            batterie--;
-
-        // Alerte batterie faible
         if (batterie < 30)
         {
             // === Écran rouge (batterie faible) ===
             LED_R = 0;  // ON
             LED_G = 1;  // OFF
             LED_B = 1;  // OFF
-
-            // set_color(255, 0, 0);  // rouge
-            // clear_graphics();
 
             goto_lico(9, 0);
             draw_string((unsigned char*)"!!! BATTERIE FAIBLE !!!");
@@ -174,9 +156,9 @@ void tache1(void)
             LED_G = 0;  // vert ON
             LED_B = 1;
 
-            // Effacer le message précédent
             goto_lico(9, 0);
-            draw_string((unsigned char*)" ");
+            // efface proprement la ligne d’alerte batterie (≥23 espaces)
+            draw_string((unsigned char*)"                         ");
         }
 
         // Affichage du niveau
@@ -186,7 +168,6 @@ void tache1(void)
         goto_lico(9, 0);
         draw_string((unsigned char*)"Frein:");
 
-        // Si le frein à main est serré
         if (FREIN_A_MAIN == 0)
         {
             draw_string((unsigned char*)"((!))");
@@ -196,31 +177,26 @@ void tache1(void)
             LED_G = 1;  // OFF
             LED_B = 1;  // OFF
 
-            // set_color(255, 0, 0);
-            // clear_graphics();
-
             goto_lico(10, 0);
             draw_string((unsigned char*)"ENLEVEZ FREIN A MAIN");
 
-            // Empêche la marche avant
             if (MARCHE_AVANT == 0)
             {
                 draw_string((unsigned char*)" - BLOQUE -");
-                vitesse = 0;  // sécurité : force l'arrêt
+                vitesse = 0;
             }
         }
         else
         {
-            draw_string((unsigned char*)" ");
+            // efface proprement "((!))"
+            draw_string((unsigned char*)"     ");
 
             // État normal : vert
-            LED_R = 1;
-            LED_G = 0;
-            LED_B = 1;
+            LED_R = 1; LED_G = 0; LED_B = 1;
 
-            // Nettoie le message d’alerte
+            // efface proprement "ENLEVEZ FREIN A MAIN"
             goto_lico(10, 0);
-            draw_string((unsigned char*)" ");
+            draw_string((unsigned char*)"                      ");
         }
 
         // === Badge ===
@@ -235,9 +211,9 @@ void tache1(void)
         }
         else
         {
-            // Nettoie proprement la ligne "Inserez carte:"
+            // efface proprement "Inserez carte:"
             goto_lico(11, 0);
-            draw_string((unsigned char*)" ");
+            draw_string((unsigned char*)"               ");
 
             for (i = 0; i < n_octet_badge; i++)
                 draw_hex8(badge[i]);
