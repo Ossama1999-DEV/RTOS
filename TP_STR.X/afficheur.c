@@ -32,7 +32,7 @@ unsigned char check_status_ok(void)
     unsigned char res;
 
 
-    TRISH=0xFF; // Données en entrée
+    TRISH=0xFF; // Donnï¿½es en entrï¿½e
     GLCD_CD=1;
     GLCD_CE=0;
     GLCD_RD=0;
@@ -58,7 +58,7 @@ unsigned char wait_status_ok(void)
     res=2;//res=2;
     while (res==2)
     {
-        TRISH=0xFF; // Données en entrée
+        TRISH=0xFF; // Donnï¿½es en entrï¿½e
         GLCD_CD=1;
         GLCD_CE=0;
         GLCD_RD=0;
@@ -153,7 +153,7 @@ unsigned char d2command(unsigned char d1, unsigned char d2, unsigned char cmd)
 
 void delai_us_char(unsigned char ucdelai)
 {
-    // dure environ 1µs à12MHz
+    // dure environ 1ï¿½s ï¿½12MHz
     while (ucdelai>0)
     {
         Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();
@@ -173,19 +173,19 @@ void initialisation_afficheur(void)
     LATJ=0x1F;
 
     // Sens des ports
-    TRISH=0;//Données en sortie
+    TRISH=0;//Donnï¿½es en sortie
     TRISJ=0;//Signaux de commande en sortie
 
     // Configuration du texte 40 colonnes et 16 lignes
     GLCD_MD=0; // 40 colonnes de texte
-    GLCD_FS=1; // caractères 6x8 pixels
+    GLCD_FS=1; // caractï¿½res 6x8 pixels
 
     // Reset du lcd
     GLCD_RES=0;
     delai_us_char(4); // reset pendant 5 clock 830ns (fosc lcd = 6MHz)
     GLCD_RES=1;
 
-    // Vérification du status
+    // Vï¿½rification du status
 
     delai_us_char(12);
     while(check_status_ok()==00)
@@ -202,7 +202,7 @@ void initialisation_afficheur(void)
     }
 
     // Register setting
-    d2command(39,15,SET_CURSOR_POINTER);//curseur en bas à droite
+    d2command(39,15,SET_CURSOR_POINTER);//curseur en bas ï¿½ droite
     d2command(0,0,SET_OFFSET_REGISTER);
     d2command(0,0,SET_ADDRESS_POINTER);
 
@@ -227,15 +227,15 @@ void initialisation_afficheur(void)
 
 void draw_char(unsigned char dccar)
 {
-    if (dccar<32)//Caractères non imprimables 0-31
+    if (dccar<32)//Caractï¿½res non imprimables 0-31
     {
         dccar=0x3F;//'?'
     }
-    if (dccar>0x9F)//Caractères au delà de la table du controleur d'afficheur
+    if (dccar>0x9F)//Caractï¿½res au delï¿½ de la table du controleur d'afficheur
     {
         dccar=0x3F;//'?'
     }
-    dccar=dccar-32;// conversion table ascii à table afficheur
+    dccar=dccar-32;// conversion table ascii ï¿½ table afficheur
     while(d1command(dccar,0xC0)==0) Nop();
 }
 
@@ -294,7 +294,7 @@ void draw_dec8(unsigned char octet)
 
 void goto_lico(unsigned char ligne, unsigned char colonne)
 {
-    unsigned int adr;//ne pas initialiser les static dans la déclaration
+    unsigned int adr;//ne pas initialiser les static dans la dï¿½claration
 
     adr=0x7B00;
     if (ligne>15) ligne=0;
@@ -346,7 +346,7 @@ void plot1(unsigned char x, unsigned char y)
 
     switch(x%6)
     {
-        // Mise à 1 du pixel choisi
+        // Mise ï¿½ 1 du pixel choisi
         case 0: command(0xFD); break;
         case 1: command(0xFC); break;
         case 2: command(0xFB); break;
@@ -367,7 +367,7 @@ void plot0(unsigned char x, unsigned char y)
 
     switch(x%6)
     {
-        // Mise à 0 du pixel choisi
+        // Mise ï¿½ 0 du pixel choisi
         case 0: command(0xF5); break;
         case 1: command(0xF4); break;
         case 2: command(0xF3); break;
@@ -377,4 +377,88 @@ void plot0(unsigned char x, unsigned char y)
         default:break;
     }
 
+}
+
+/**
+ * @function afficher_chariot
+ * @brief Affiche un chariot stylisÃ© en pixels sur l'Ã©cran graphique.
+ */
+void afficher_gabarit(void)
+{
+    clear_graphics();
+    // Ligne du haut
+    goto_lico(0, 0); draw_string((unsigned char*)"âš  âš™ ðŸª« ");
+    goto_lico(0, 40); draw_string((unsigned char*)"Badge:");
+    
+    // Batterie (icÃ´ne fixe)
+    draw_rectangle(110, 0, 125, 8); // cadre batterie
+    draw_line(126, 2, 126, 6);      // tÃªte batterie
+    
+    // Chariot (image pixel)
+    afficher_chariot(); // dessin stylisÃ© via pixels
+}
+
+void afficher_chariot(void)
+{
+    // Base du chariot
+    draw_line(30, 50, 70, 50);
+    draw_line(30, 40, 70, 40);
+    draw_line(30, 40, 30, 50);
+    draw_line(70, 40, 70, 50);
+
+    // MÃ¢t
+    draw_line(68, 20, 68, 40);
+    draw_line(72, 20, 72, 40);
+
+    // Fourches
+    draw_line(70, 50, 90, 50);
+}
+
+void afficher_alerte(const char* message)
+{
+    static unsigned char blink = 0;
+    blink ^= 1;
+    goto_lico(10, 0);
+    if (blink)
+        draw_string((unsigned char*)message);
+    else
+        draw_string((unsigned char*)"                  ");
+}
+
+
+// ============================================================================
+// Fonctions de dessin simples pour GLCD
+// ============================================================================
+void draw_line(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2)
+{
+    unsigned char dx, dy, sx, sy, err, e2;
+    dx = (x2 > x1) ? (x2 - x1) : (x1 - x2);
+    dy = (y2 > y1) ? (y1 - y2) : (y2 - y1);
+    sx = (x1 < x2) ? 1 : -1;
+    sy = (y1 < y2) ? 1 : -1;
+    err = dx - dy;
+
+    while (1)
+    {
+        plot1(x1, y1);
+        if (x1 == x2 && y1 == y2)
+            break;
+        e2 = 2 * err;
+        if (e2 > -dy) { err -= dy; x1 += sx; }
+        if (e2 < dx)  { err += dx; y1 += sy; }
+    }
+}
+
+void draw_rectangle(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2)
+{
+    draw_line(x1, y1, x2, y1);
+    draw_line(x2, y1, x2, y2);
+    draw_line(x2, y2, x1, y2);
+    draw_line(x1, y2, x1, y1);
+}
+
+void rafraichir_affichage(void)
+{
+    // Cette fonction peut servir Ã  forcer un redraw complet
+    // Ici, elle ne fait rien de spÃ©cial, mais elle Ã©vite l'erreur de compilation
 }
