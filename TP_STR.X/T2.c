@@ -11,42 +11,42 @@ void tache2(void)
     {
         DRIVEA=1;// Right=Vcc Left=GND Top en l'air
         DRIVEB=0;// Bottom en l'air
-        tp_delai(3000);// Dï¿½lai d'ï¿½tablissement du signal ~= 3000 us
+        tp_delai(3000);// Délai d'établissement du signal ~= 3000 us
 
-        P(SEM_CAN);
+        //P(SEM_CAN);
 
         ADCON2=0x16; // Fosc/64 Tacq=4TAD
         ADCON0=0x01; // Module AD ON channel 0 (X)
-        ADCON0=0x03; //Dï¿½but de conversion
+        ADCON0=0x03; //Début de conversion
         while(ADCON0bits.DONE==1)
             ;
         hx=ADRESH;
         lx=ADRESL;
 
-        V(SEM_CAN);
+        //V(SEM_CAN);
 
-        if ((lx&0x0F)!=0){hx=0;lx=0;}// Si tension nï¿½gative
+        if ((lx&0x0F)!=0){hx=0;lx=0;}// Si tension négative
 
 
         if (hx>=10)
         {
             DRIVEA=0;// Right en l'air Left en l'air Top=Vcc
             DRIVEB=1;// Bottom=GND
-            tp_delai(3000);// Dï¿½lai d'ï¿½tablissement du signal ~= 3000 us
+            tp_delai(3000);// Délai d'établissement du signal ~= 3000 us
 
             //P(SEM_CAN);
 
             ADCON2=0x16; // Fosc/64 Tacq=4TAD
             ADCON0=0x05; // Module AD ON channel 1 (Y)
-            ADCON0=0x07; //Dï¿½but de conversion
+            ADCON0=0x07; //Début de conversion
             while(ADCON0bits.DONE==1)
                 ;
             hy=ADRESH;
             ly=ADRESL;
 
-            V(SEM_CAN);
+            //V(SEM_CAN);
 
-            if ((ly&0x0F)!=0){hy=0;ly=0;}// Si tension nï¿½gative
+            if ((ly&0x0F)!=0){hy=0;ly=0;}// Si tension négative
 
             if (hy>=20)
             {

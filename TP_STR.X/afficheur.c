@@ -32,7 +32,7 @@ unsigned char check_status_ok(void)
     unsigned char res;
 
 
-    TRISH=0xFF; // Données en entrée
+    TRISH=0xFF; // Donnï¿½es en entrï¿½e
     GLCD_CD=1;
     GLCD_CE=0;
     GLCD_RD=0;
@@ -58,7 +58,7 @@ unsigned char wait_status_ok(void)
     res=2;//res=2;
     while (res==2)
     {
-        TRISH=0xFF; // Données en entrée
+        TRISH=0xFF; // Donnï¿½es en entrï¿½e
         GLCD_CD=1;
         GLCD_CE=0;
         GLCD_RD=0;
@@ -153,7 +153,7 @@ unsigned char d2command(unsigned char d1, unsigned char d2, unsigned char cmd)
 
 void delai_us_char(unsigned char ucdelai)
 {
-    // dure environ 1µs à12MHz
+    // dure environ 1ï¿½s ï¿½12MHz
     while (ucdelai>0)
     {
         Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();
@@ -173,19 +173,19 @@ void initialisation_afficheur(void)
     LATJ=0x1F;
 
     // Sens des ports
-    TRISH=0;//Données en sortie
+    TRISH=0;//Donnï¿½es en sortie
     TRISJ=0;//Signaux de commande en sortie
 
     // Configuration du texte 40 colonnes et 16 lignes
     GLCD_MD=0; // 40 colonnes de texte
-    GLCD_FS=1; // caractères 6x8 pixels
+    GLCD_FS=1; // caractï¿½res 6x8 pixels
 
     // Reset du lcd
     GLCD_RES=0;
     delai_us_char(4); // reset pendant 5 clock 830ns (fosc lcd = 6MHz)
     GLCD_RES=1;
 
-    // Vérification du status
+    // Vï¿½rification du status
 
     delai_us_char(12);
     while(check_status_ok()==00)
@@ -202,7 +202,7 @@ void initialisation_afficheur(void)
     }
 
     // Register setting
-    d2command(39,15,SET_CURSOR_POINTER);//curseur en bas à droite
+    d2command(39,15,SET_CURSOR_POINTER);//curseur en bas ï¿½ droite
     d2command(0,0,SET_OFFSET_REGISTER);
     d2command(0,0,SET_ADDRESS_POINTER);
 
@@ -227,15 +227,15 @@ void initialisation_afficheur(void)
 
 void draw_char(unsigned char dccar)
 {
-    if (dccar<32)//Caractères non imprimables 0-31
+    if (dccar<32)//Caractï¿½res non imprimables 0-31
     {
         dccar=0x3F;//'?'
     }
-    if (dccar>0x9F)//Caractères au delà de la table du controleur d'afficheur
+    if (dccar>0x9F)//Caractï¿½res au delï¿½ de la table du controleur d'afficheur
     {
         dccar=0x3F;//'?'
     }
-    dccar=dccar-32;// conversion table ascii à table afficheur
+    dccar=dccar-32;// conversion table ascii ï¿½ table afficheur
     while(d1command(dccar,0xC0)==0) Nop();
 }
 
@@ -294,7 +294,7 @@ void draw_dec8(unsigned char octet)
 
 void goto_lico(unsigned char ligne, unsigned char colonne)
 {
-    unsigned int adr;//ne pas initialiser les static dans la déclaration
+    unsigned int adr;//ne pas initialiser les static dans la dï¿½claration
 
     adr=0x7B00;
     if (ligne>15) ligne=0;
@@ -346,7 +346,7 @@ void plot1(unsigned char x, unsigned char y)
 
     switch(x%6)
     {
-        // Mise à 1 du pixel choisi
+        // Mise ï¿½ 1 du pixel choisi
         case 0: command(0xFD); break;
         case 1: command(0xFC); break;
         case 2: command(0xFB); break;
@@ -367,7 +367,7 @@ void plot0(unsigned char x, unsigned char y)
 
     switch(x%6)
     {
-        // Mise à 0 du pixel choisi
+        // Mise ï¿½ 0 du pixel choisi
         case 0: command(0xF5); break;
         case 1: command(0xF4); break;
         case 2: command(0xF3); break;
@@ -377,4 +377,16 @@ void plot0(unsigned char x, unsigned char y)
         default:break;
     }
 
+}
+void draw_bitmap(unsigned char x, unsigned char y, const unsigned char *bitmap, unsigned char w, unsigned char h)
+{
+    unsigned char i, j;
+    for (i = 0; i < h; i++)
+    {
+        for (j = 0; j < w; j++)
+        {
+            if (bitmap[i * w + j])
+                plot1(x + j, y + i);
+        }
+    }
 }

@@ -48,6 +48,7 @@ extern "C" {
     void clear_cgram(void);
     void plot1(unsigned char x, unsigned char y);
     void plot0(unsigned char x, unsigned char y);
+    void draw_bitmap(unsigned char x, unsigned char y, const unsigned char *bitmap, unsigned char w, unsigned char h);
 
 
 

@@ -1,242 +1,140 @@
 #include "T1.h"
 
-/*!
- * \file T1.c
- * \brief Tâche 1 : Interface utilisateur
- * \author DBIBIH Oussama
- * \version 1.0
- */
+const unsigned char ATTENTION_ICON[32*32] = {
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,
+0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
+0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
+0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,
+0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+};
+
 
 void tache1(void)
 {
     unsigned char i;
 
-    // === Initialisation ===
     di();
     initialisation_afficheur();
     clear_text();
     clear_graphics();
     init_rxtx();
     Init(SEM_RXTX);
-    RXTX_libre = 1;
-    TXREG1 = 'R';
+    RXTX_libre=1;
+    TXREG1='R';
     ei();
 
-    LED_R = 0;
-    LED_G = 0;
-    LED_B = 0;
+    LED_R=0;LED_G=0;LED_B=0;
 
-    vitesse = 0;
-    batterie = 120;
-    n_octet_badge = 0;
-    TP_appui = 0;
+    vitesse=0;
+    batterie=120;
+    n_octet_badge=0;
 
-    // === En-tête affichage ===
-    goto_lico(13, 34);
-    draw_char('R'); draw_char(' '); draw_char('V'); draw_char(' '); draw_char('B');
-    goto_lico(14, 34);
-    draw_char('0'); draw_char(' '); draw_char('0'); draw_char(' '); draw_char('0');
-    goto_lico(15, 34);
-    draw_char('1'); draw_char(' '); draw_char('1'); draw_char(' '); draw_char('1');
+    goto_lico(13,34);draw_char('R');draw_char(' ');draw_char('V');draw_char(' ');draw_char('B');
+    goto_lico(14,34);draw_char('0');draw_char(' ');draw_char('0');draw_char(' ');draw_char('0');
+    goto_lico(15,34);draw_char('1');draw_char(' ');draw_char('1');draw_char(' ');draw_char('1');
 
-    while (1)
+    TP_appui=0;
+
+    while(1)
     {
-        // === Marche ===
-        goto_lico(0, 0);
-        draw_string((unsigned char*)"Marche:");
 
-        if (MARCHE_AVANT == 0)
-        {
-            draw_string((unsigned char*)"AV");
-
-            // === Écran vert (marche avant) ===
-            LED_R = 1;  // OFF
-            LED_G = 0;  // ON
-            LED_B = 1;  // OFF
-        }
-        else if (MARCHE_ARRIERE == 0)
-        {
-            draw_string((unsigned char*)"AR");
-
-            // === Écran jaune (marche arrière) ===
-            LED_R = 0;  // ON
-            LED_G = 0;  // ON
-            LED_B = 1;  // OFF
-        }
+        goto_lico(0,0);
+        draw_string("Marche:");
+        if (MARCHE_AVANT==0)
+            draw_string("AV");
         else
-        {
-            draw_string((unsigned char*)"N ");
+            if (MARCHE_ARRIERE==0)
+                draw_string("AR");
+            else
+                draw_string("N ");
 
-            // === Neutre ===
-            LED_R = 1;
-            LED_G = 1;
-            LED_B = 1;
-        }
+        goto_lico(1,0);
+        draw_string("Siege:");
+        if (SIEGE==0)
+        {draw_char('1');}
+        else
+        {draw_char('0');}
 
-        // === Siege ===
-        goto_lico(1, 0);
-        draw_string((unsigned char*)"Siege:");
-        draw_char(SIEGE == 0 ? '1' : '0');
-
-        // === Températures ===
-        goto_lico(2, 0);
-        draw_string((unsigned char*)"Temp. Eau:");
+        goto_lico(2,0);
+        draw_string("Temp. Eau:");
         draw_hex8(lecture_8bit_analogique(TEMPERATURE_EAU));
 
-        goto_lico(3, 0);
-        draw_string((unsigned char*)"Temp. Huile:");
+        goto_lico(3,0);
+        draw_string("Temp. Huile:");
         draw_hex8(lecture_8bit_analogique(TEMPERATURE_HUILE));
 
-        // === Choc ===
-        goto_lico(4, 0);
-        draw_string((unsigned char*)"Choc:");
-
-        if (CHOC == 0)
-        {
+        goto_lico(4,0);
+        draw_string("Choc:");
+        if (CHOC==0)
             draw_char('1');
-            LED_R = 0; LED_G = 1; LED_B = 1;
-
-            goto_lico(7, 0);
-            draw_string((unsigned char*)"!!! ALERTE CHOC !!!");
-        }
         else
-        {
             draw_char('0');
-            LED_R = 1; LED_G = 0; LED_B = 1;
 
-            goto_lico(7, 0);
-            // efface proprement l’alerte choc (19+ caractères)
-            draw_string((unsigned char*)"                     ");
-        }
-
-        // === Vitesse ===
-        goto_lico(5, 0);
-        draw_string((unsigned char*)"Vitesse:");
-
-        if (VITESSE_PLUS == 0 && vitesse < 255) vitesse++;
-        if (VITESSE_MOINS == 0 && vitesse > 0)  vitesse--;
-
+        goto_lico(5,0);
+        draw_string("Vitesse:");
+        if (VITESSE_PLUS==0)
+            vitesse++;
+        if (VITESSE_MOINS==0)
+            vitesse--;
         draw_hex8(vitesse);
 
-        if (vitesse > 30)
-        {
-            LED_R = 0; LED_G = 1; LED_B = 1;
-            goto_lico(6, 0);
-            draw_string((unsigned char*)"ALERTE: >30 km/h");
-        }
-        else
-        {
-            LED_R = 1; LED_G = 0; LED_B = 1;
-            goto_lico(6, 0);
-            // efface le message "ALERTE: >30 km/h" (≥16 espaces)
-            draw_string((unsigned char*)"                  ");
-        }
-
-        // === Batterie ===
-        goto_lico(8, 0);
-        draw_string((unsigned char*)"Batterie:");
-
-        if (BATTERIE_PLUS == 0)           batterie++;
-        if (BATTERIE_MOINS == 0 && batterie > 0) batterie--;
-
-        if (batterie < 30)
-        {
-            // === Écran rouge (batterie faible) ===
-            LED_R = 0;  // ON
-            LED_G = 1;  // OFF
-            LED_B = 1;  // OFF
-
-            goto_lico(9, 0);
-            draw_string((unsigned char*)"!!! BATTERIE FAIBLE !!!");
-        }
-        else
-        {
-            // Rétablir couleurs normales
-            LED_R = 1;
-            LED_G = 0;  // vert ON
-            LED_B = 1;
-
-            goto_lico(9, 0);
-            // efface proprement la ligne d’alerte batterie (≥23 espaces)
-            draw_string((unsigned char*)"                         ");
-        }
-
-        // Affichage du niveau
+        goto_lico(6,0);
+        draw_string("Batterie:");
+        if (BATTERIE_PLUS==0)
+            batterie++;
+        if (BATTERIE_MOINS==0)
+            batterie--;
         draw_hex8(batterie);
 
-        // === Frein à main ===
-        goto_lico(9, 0);
-        draw_string((unsigned char*)"Frein:");
+        goto_lico(7,0);
+        if (FREIN_A_MAIN==0)
+            draw_string("((!))");
+        else
+            draw_string("     ");
 
-        if (FREIN_A_MAIN == 0)
+        goto_lico(8,0);
+        draw_string("Badge:");
+        if (n_octet_badge==0)
+            draw_string(" AUCUN              ");
+        else
         {
-            draw_string((unsigned char*)"((!))");
-
-            // === Écran rouge (alerte) ===
-            LED_R = 0;  // ON
-            LED_G = 1;  // OFF
-            LED_B = 1;  // OFF
-
-            goto_lico(10, 0);
-            draw_string((unsigned char*)"ENLEVEZ FREIN A MAIN");
-
-            if (MARCHE_AVANT == 0)
+            for (i=0;i<n_octet_badge;i++)
             {
-                draw_string((unsigned char*)" - BLOQUE -");
-                vitesse = 0;
+                draw_hex8(badge[i]);
             }
         }
-        else
-        {
-            // efface proprement "((!))"
-            draw_string((unsigned char*)"     ");
 
-            // État normal : vert
-            LED_R = 1; LED_G = 0; LED_B = 1;
+        draw_bitmap(20, 10, ATTENTION_ICON, 32, 32);
 
-            // efface proprement "ENLEVEZ FREIN A MAIN"
-            goto_lico(10, 0);
-            draw_string((unsigned char*)"                      ");
-        }
-
-        // === Badge ===
-        goto_lico(10, 0);
-        draw_string((unsigned char*)"Badge:");
-
-        if (n_octet_badge == 0)
-        {
-            draw_string((unsigned char*)" AUCUN");
-            goto_lico(11, 0);
-            draw_string((unsigned char*)"Inserez carte:");
-        }
-        else
-        {
-            // efface proprement "Inserez carte:"
-            goto_lico(11, 0);
-            draw_string((unsigned char*)"               ");
-
-            for (i = 0; i < n_octet_badge; i++)
-                draw_hex8(badge[i]);
-        }
-
-        // === Joystick ===
-        goto_lico(12, 0);
-        draw_string((unsigned char*)"X-Joystick:");
+        goto_lico(9,0);
+        draw_string("X-Joystick:");
         draw_dec8(lecture_8bit_analogique(JOYSTICK_X));
 
-        goto_lico(13, 0);
-        draw_string((unsigned char*)"Y-Joystick:");
+        goto_lico(10,0);
+        draw_string("Y-Joystick:");
         draw_dec8(lecture_8bit_analogique(JOYSTICK_Y));
 
-        // === Touch Panel ===
-        if (TP_appui == 1)
+        if (TP_appui==1)
         {
-            goto_lico(0, 20);
-            draw_string((unsigned char*)"x=");
+            goto_lico(0,20);
+            draw_string("x=");
             draw_dec8(TP_x);
-            draw_string((unsigned char*)" y=");
+            draw_string(" y=");
             draw_dec8(TP_y);
-            plot1(TP_x, TP_y);
+            plot1(TP_x,TP_y);
         }
         else
         {
