@@ -49,16 +49,6 @@ extern "C" {
     void plot1(unsigned char x, unsigned char y);
     void plot0(unsigned char x, unsigned char y);
 
-    /**
-     * ajouter
-     */
-    void afficher_alerte(const char* message);
-    void afficher_chariot(void);
-    void afficher_gabarit(void);
-    void draw_line(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2);
-    void draw_rectangle(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2);
-    void rafraichir_affichage(void);
-
 
 
 #ifdef	__cplusplus
