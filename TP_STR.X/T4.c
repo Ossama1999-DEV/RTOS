@@ -1,8 +1,8 @@
 /**
  * @file T4.c
  * @author DBIBIH O.
- * @brief Tâche 4 – Détection du choc et affichage unique des infos
- * @version 7.0
+ * @brief Tâche 4 – Détection du choc avec protection du port série
+ * @version 8.0
  */
 
 #include "T4.h"
@@ -10,15 +10,23 @@
 
 /**
  * @brief Envoie une chaîne caractère par caractère sur TX1
+ * protégée par le sémaphore SEM_RXTX
  */
 static void send_string_uart(const char *s)
 {
+    P(SEM_RXTX);
+    while (RXTX_libre == 0);
+    RXTX_libre = 0;
+
     while (*s)
     {
-        while (PIR1bits.TX1IF == 0);  // attente que le buffer soit libre
+        while (PIR1bits.TX1IF == 0);
         TXREG1 = *s++;
-        while (TXSTA1bits.TRMT == 0); // attente fin d’envoi
+        while (TXSTA1bits.TRMT == 0);
     }
+
+    RXTX_libre = 1;
+    V(SEM_RXTX);
 }
 
 void tache4(void)
@@ -54,16 +62,16 @@ void tache4(void)
 
             send_string_uart("***************************************\r\n");
 
-            choc_precedent = 1; // empêche répétition tant que le bouton est maintenu
+            choc_precedent = 1;
         }
 
-        // --- Réinitialisation à la relâche du bouton ---
+        // --- Réinitialisation quand le bouton est relâché ---
         if (CHOC == 0 && choc_precedent == 1)
         {
             choc_precedent = 0;
         }
 
-        // Boucle non bloquante, ultra légère
+        // Laisse tourner librement, sans blocage
         Nop(); Nop();
     }
 }
