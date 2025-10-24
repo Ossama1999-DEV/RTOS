@@ -1,44 +1,42 @@
 /**
  * @file T4.c
  * @author DBIBIH O.
- * @brief Tâche 4 – Détection de choc : envoi de l'événement avec vitesse et badge.
- * @version 3.0
+ * @brief Tâche 4 – Surveillance du choc et envoi série des informations vitesse + badge
+ * @version 4.0
  */
 
 #include "T4.h"
 #include <stdio.h>
 
-/**
- * @details
- * - Surveille l'entrée CHOC.
- * - Lorsqu’un choc est détecté, envoie un message unique :
- *   ➤ vitesse au moment du choc,
- *   ➤ numéro du badge actif (ou “AUCUN” si non lu).
- * - Évite le spam tant que le choc est maintenu.
- */
 void tache4(void)
 {
     unsigned int a;
     char buffer[64];
-    unsigned char choc_detecte_precedent = 0;
+    unsigned char choc_precedent = 0;
     unsigned char vitesse_choc = 0;
 
     while (1)
     {
-        // --- Détection d’un nouveau choc ---
-        if (CHOC == 1 && choc_detecte_precedent == 0)
+        // --- Si aucun choc ---
+        if (CHOC == 0)
         {
-            choc_detecte_precedent = 1;
-            vitesse_choc = vitesse;  // capture de la vitesse exacte
-
-            // Construction du message de choc
-            sprintf(buffer, "\r\n⚠️ CHOC détecté à %u km/h", vitesse_choc);
+            // affichage régulier de l’état normal
+            sprintf(buffer, "choc 0  vitesse: %u km/h\r\n", vitesse);
             rxtx_send_string(buffer);
 
-            // Ajout du numéro de badge si disponible
+            choc_precedent = 0; // réinitialisation pour détecter le prochain choc
+        }
+        // --- Si un choc vient d’être détecté ---
+        else if (CHOC == 1 && choc_precedent == 0)
+        {
+            vitesse_choc = vitesse;
+            sprintf(buffer, "CHOC DETECTE !!  vitesse: %u km/h", vitesse_choc);
+            rxtx_send_string(buffer);
+
+            // ajout du numéro de badge s’il existe
             if (n_octet_badge > 0)
             {
-                rxtx_send_string(" | BADGE=");
+                rxtx_send_string("  badge: ");
                 for (unsigned char i = 0; i < n_octet_badge; i++)
                 {
                     sprintf(buffer, "%02X", badge[i]);
@@ -47,31 +45,15 @@ void tache4(void)
             }
             else
             {
-                rxtx_send_string(" | BADGE=AUCUN");
+                rxtx_send_string("  badge: AUCUN");
             }
 
             rxtx_send_string("\r\n");
 
-            // 🔴 Clignotement LED rouge témoin du choc (optionnel mais utile)
-            LED_R = 1;
-            for (a = 0; a < 40000; a++);
-            LED_R = 0;
+            choc_precedent = 1; // évite de répéter pendant tout le temps du choc
         }
 
-        // --- Réinitialisation du flag une fois le choc relâché ---
-        if (CHOC == 0 && choc_detecte_precedent == 1)
-        {
-            choc_detecte_precedent = 0;
-        }
-
-        // --- Envoi périodique de la vitesse (optionnel pour supervision) ---
-        if (vitesse > 0)
-        {
-            sprintf(buffer, "VITESSE=%u\r\n", vitesse);
-            rxtx_send_string(buffer);
-        }
-
-        // --- Temporisation de la tâche ---
-        for (a = 0; a < 60000; a++);
+        // --- Petite temporisation légère (évite surcharge CPU) ---
+        for (a = 0; a < 50000; a++);
     }
 }
