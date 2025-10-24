@@ -7,6 +7,7 @@
 
 #include "T4.h"
 #include <stdio.h>
+#include <string.h>
 
 /**
  * @brief Envoie une chaîne caractère par caractère sur TX1
@@ -14,7 +15,7 @@
  */
 static void send_string_uart(const char *s)
 {
-    P(SEM_RXTX);
+    // P(SEM_RXTX);
     while (RXTX_libre == 0);
     RXTX_libre = 0;
 
@@ -26,12 +27,13 @@ static void send_string_uart(const char *s)
     }
 
     RXTX_libre = 1;
-    V(SEM_RXTX);
+    // V(SEM_RXTX);
 }
 
 void tache4(void)
 {
     char buffer[64];
+    memset(buffer, 0, sizeof(buffer));
     unsigned char choc_precedent = 0;
 
     while (1)
