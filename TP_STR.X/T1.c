@@ -8,13 +8,23 @@ void tache1(void)
     initialisation_afficheur();
     clear_text();
     clear_graphics();
+    goto_lico(0, 0);
+    draw_string((unsigned char*)"⚠ ⚙ 🪫 ");
+    goto_lico(0, 40);
+    draw_string((unsigned char*)"Badge:");
+    // Batterie (icône fixe)
+    draw_rectangle(110, 0, 125, 8); // cadre batterie
+    draw_line(126, 2, 126, 6);      // tête batterie
+    // Chariot (image pixel)
+    afficher_chariot(); // dessin stylisé via pixels
     init_rxtx();
     Init(SEM_RXTX);
-    RXTX_libre=1;
-    TXREG1='R';
+    RXTX_libre = 1;
+    TXREG1 = 'R';
     ei();
-
-    LED_R=0;LED_G=0;LED_B=0;
+    LED_R = 0;
+    LED_G = 0;
+    LED_B = 0;
 
     vitesse=0;
     batterie=120;
