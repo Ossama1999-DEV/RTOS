@@ -1,8 +1,8 @@
 /**
  * @file T4.c
  * @author DBIBIH O.
- * @brief Tâche 4 – Transmission caractère par caractère (CHOC / VITESSE / BADGE)
- * @version 6.0
+ * @brief Tâche 4 – Détection du choc et affichage unique des infos
+ * @version 7.0
  */
 
 #include "T4.h"
@@ -15,7 +15,7 @@ static void send_string_uart(const char *s)
 {
     while (*s)
     {
-        while (PIR1bits.TX1IF == 0);  // attente buffer libre
+        while (PIR1bits.TX1IF == 0);  // attente que le buffer soit libre
         TXREG1 = *s++;
         while (TXSTA1bits.TRMT == 0); // attente fin d’envoi
     }
@@ -28,18 +28,16 @@ void tache4(void)
 
     while (1)
     {
-        // --- Affichage continu : choc + vitesse ---
-        sprintf(buffer, "choc %d  vitesse: %u km/h\r\n", CHOC, vitesse);
-        send_string_uart(buffer);
-
-        // --- Détection du front montant de CHOC ---
+        // --- Détection du front montant (nouveau choc détecté) ---
         if (CHOC == 1 && choc_precedent == 0)
         {
-            send_string_uart("--------------------------------------------------------\r\n");
+            send_string_uart("***************************************\r\n");
+            send_string_uart("choc detecter\r\n");
 
-            sprintf(buffer, "CHOC 1  vitesse: %u km/h  badge: ", vitesse);
+            sprintf(buffer, "vitesse: %u km/h\r\n", vitesse);
             send_string_uart(buffer);
 
+            send_string_uart("badge: ");
             if (n_octet_badge > 0)
             {
                 for (unsigned char i = 0; i < n_octet_badge; i++)
@@ -47,24 +45,25 @@ void tache4(void)
                     sprintf(buffer, "%02X", badge[i]);
                     send_string_uart(buffer);
                 }
+                send_string_uart("\r\n");
             }
             else
             {
-                send_string_uart("AUCUN");
+                send_string_uart("AUCUN\r\n");
             }
 
-            send_string_uart("\r\n--------------------------------------------------------\r\n");
+            send_string_uart("***************************************\r\n");
 
-            choc_precedent = 1; // évite répétition pendant l’appui
+            choc_precedent = 1; // empêche répétition tant que le bouton est maintenu
         }
 
-        // --- Réinitialisation une fois le bouton relâché ---
+        // --- Réinitialisation à la relâche du bouton ---
         if (CHOC == 0 && choc_precedent == 1)
         {
             choc_precedent = 0;
         }
 
-        // tâche ultra-légère, aucun délai bloquant
+        // Boucle non bloquante, ultra légère
         Nop(); Nop();
     }
 }
