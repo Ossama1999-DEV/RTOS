@@ -1,8 +1,8 @@
 /**
  * @file T4.c
  * @author DBIBIH O.
- * @brief Tâche 4 – Surveillance du choc et envoi série des informations vitesse + badge
- * @version 4.0
+ * @brief Tâche 4 – Lecture continue de CHOC / VITESSE / BADGE
+ * @version 5.0
  */
 
 #include "T4.h"
@@ -10,33 +10,24 @@
 
 void tache4(void)
 {
-    unsigned int a;
-    char buffer[64];
+    char buffer[128];
     unsigned char choc_precedent = 0;
-    unsigned char vitesse_choc = 0;
 
     while (1)
     {
-        // --- Si aucun choc ---
-        if (CHOC == 0)
+        // --- Lecture continue de la vitesse et du badge ---
+        sprintf(buffer, "choc %d  vitesse: %u km/h\r\n", CHOC, vitesse);
+        rxtx_send_string(buffer);
+
+        // --- Détection d’un appui sur le bouton de choc ---
+        if (CHOC == 1 && choc_precedent == 0)
         {
-            // affichage régulier de l’état normal
-            sprintf(buffer, "choc 0  vitesse: %u km/h\r\n", vitesse);
+            rxtx_send_string("--------------------------------------------------------\r\n");
+            sprintf(buffer, "CHOC 1  vitesse: %u km/h  badge: ", vitesse);
             rxtx_send_string(buffer);
 
-            choc_precedent = 0; // réinitialisation pour détecter le prochain choc
-        }
-        // --- Si un choc vient d’être détecté ---
-        else if (CHOC == 1 && choc_precedent == 0)
-        {
-            vitesse_choc = vitesse;
-            sprintf(buffer, "CHOC DETECTE !!  vitesse: %u km/h", vitesse_choc);
-            rxtx_send_string(buffer);
-
-            // ajout du numéro de badge s’il existe
             if (n_octet_badge > 0)
             {
-                rxtx_send_string("  badge: ");
                 for (unsigned char i = 0; i < n_octet_badge; i++)
                 {
                     sprintf(buffer, "%02X", badge[i]);
@@ -45,15 +36,21 @@ void tache4(void)
             }
             else
             {
-                rxtx_send_string("  badge: AUCUN");
+                rxtx_send_string("AUCUN");
             }
 
-            rxtx_send_string("\r\n");
+            rxtx_send_string("\r\n--------------------------------------------------------\r\n");
 
-            choc_precedent = 1; // évite de répéter pendant tout le temps du choc
+            choc_precedent = 1; // éviter répétition pendant appui
         }
 
-        // --- Petite temporisation légère (évite surcharge CPU) ---
-        for (a = 0; a < 50000; a++);
+        // --- Réinitialisation dès que le bouton est relâché ---
+        if (CHOC == 0 && choc_precedent == 1)
+        {
+            choc_precedent = 0;
+        }
+
+        // Aucun delay bloquant, simple rafraîchissement régulier
+        Nop(); Nop(); Nop();
     }
 }
