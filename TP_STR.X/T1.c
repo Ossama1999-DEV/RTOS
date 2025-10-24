@@ -75,7 +75,7 @@ void tache1(void)
             vitesse++;
         if (VITESSE_MOINS == 0 && vitesse > 0)
             vitesse--;
-        draw_hex8(vitesse);
+        draw_dec8(vitesse);
 
         if (vitesse > 30)
         {
@@ -96,7 +96,7 @@ void tache1(void)
             batterie++;
         if (BATTERIE_MOINS==0)
             batterie--;
-        draw_hex8(batterie);
+        draw_dec8(batterie);
 
         goto_lico(7,0);
         if (FREIN_A_MAIN==0)
