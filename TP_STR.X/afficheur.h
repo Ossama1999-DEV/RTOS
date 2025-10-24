@@ -49,6 +49,13 @@ extern "C" {
     void plot1(unsigned char x, unsigned char y);
     void plot0(unsigned char x, unsigned char y);
 
+    /** new function */
+    void draw_rectangle(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2);
+    void draw_line(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2);
+    void afficher_chariot(void);
+
+
+
 
 
 #ifdef	__cplusplus
