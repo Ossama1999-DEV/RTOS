@@ -14,6 +14,7 @@ void main()
     initialisation_des_ports();
     initialisation_du_systeme();
     Init(SEM_CAN);
+    Init(SEM_RXTX);
 
         // D�marrage du syst�me
     T0CONbits.TMR0ON=1; //D�marrage du Timer0

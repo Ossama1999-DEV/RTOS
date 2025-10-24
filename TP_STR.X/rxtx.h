@@ -15,6 +15,7 @@
 #include "main.h"
 
 void init_rxtx(void);
+void rxtx_send_string(const char *message);
 
 #ifdef	__cplusplus
 extern "C" {

@@ -25,10 +25,12 @@ void __reentrant P(unsigned char sem)
             while (Val_sem_cna < 1) // Tant que le cna est occupé
                 ;                   // On attend
             Val_sem_cna = 0;        // Dès qu'il est libre, on le réserve
+            break;
         case SEM_RXTX:
             while (Val_sem_rxtx < 1)    // Tant que la liaison série est occupé
                 ;                       // On attend
             Val_sem_rxtx = 0;           // Dès qu'elle est libre, on la réserve
+            break;
         default:
             ;
     }

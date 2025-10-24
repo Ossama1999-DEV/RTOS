@@ -19,7 +19,7 @@ void tache2(void)
         DRIVEB=0;// Bottom en l'air
         tp_delai(3000);// D�lai d'�tablissement du signal ~= 3000 us
 
-        //P(SEM_CAN);
+        P(SEM_CAN);
 
         ADCON2=0x16; // Fosc/64 Tacq=4TAD
         ADCON0=0x01; // Module AD ON channel 0 (X)
@@ -29,7 +29,7 @@ void tache2(void)
         hx=ADRESH;
         lx=ADRESL;
 
-        //V(SEM_CAN);
+        V(SEM_CAN);
 
         if ((lx&0x0F)!=0){hx=0;lx=0;}// Si tension n�gative
 
@@ -40,7 +40,7 @@ void tache2(void)
             DRIVEB=1;// Bottom=GND
             tp_delai(3000);// D�lai d'�tablissement du signal ~= 3000 us
 
-            //P(SEM_CAN);
+            P(SEM_CAN);
 
             ADCON2=0x16; // Fosc/64 Tacq=4TAD
             ADCON0=0x05; // Module AD ON channel 1 (Y)
@@ -50,7 +50,7 @@ void tache2(void)
             hy=ADRESH;
             ly=ADRESL;
 
-            //V(SEM_CAN);
+            V(SEM_CAN);
 
             if ((ly&0x0F)!=0){hy=0;ly=0;}// Si tension n�gative
 
