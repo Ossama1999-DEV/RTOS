@@ -68,7 +68,7 @@ unsigned char lecture_8bit_analogique(unsigned char channel)
 {
     unsigned char ret;
 
-    //P(SEM_CAN);
+    P(SEM_CAN);
     ADCON1=0;//Vref+ = Vdd / Vref- = Vss / pas de canal negatif
     ADCON2=0x16; // Fosc/64 Left justified Tacq=4Tad(5.3�s)
     channel=channel&0x1F; // les valeurs acceptables sont 0 � 31
@@ -83,7 +83,7 @@ unsigned char lecture_8bit_analogique(unsigned char channel)
         ret=0;
     else
         ret=ADRESH;
-    //V(SEM_CAN);
+    V(SEM_CAN);
 
     return ret;
 }
