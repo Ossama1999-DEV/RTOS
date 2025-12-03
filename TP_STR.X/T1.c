@@ -10,128 +10,167 @@ void tache1(void)
     clear_graphics();
     init_rxtx();
     Init(SEM_RXTX);
-    RXTX_libre=1;
-    TXREG1='R';
+    RXTX_libre = 1;
+    TXREG1 = 'R';
     ei();
 
-    LED_R=0;LED_G=0;LED_B=0;
+    LED_R = 0;
+    LED_G = 0;
+    LED_B = 0;
 
-    vitesse=0;
-    batterie=120;
-    n_octet_badge=0;
+    vitesse = 0;
+    batterie = 120;
+    n_octet_badge = 0;
 
-    goto_lico(13,34);draw_char('R');draw_char(' ');draw_char('V');draw_char(' ');draw_char('B');
-    goto_lico(14,34);draw_char('0');draw_char(' ');draw_char('0');draw_char(' ');draw_char('0');
-    goto_lico(15,34);draw_char('1');draw_char(' ');draw_char('1');draw_char(' ');draw_char('1');
+    // Petit repere RVB en bas a droite (je laisse comme tu avais)
+    goto_lico(13, 34); draw_char('R'); draw_char(' '); draw_char('V'); draw_char(' '); draw_char('B');
+    goto_lico(14, 34); draw_char('0'); draw_char(' '); draw_char('0'); draw_char(' '); draw_char('0');
+    goto_lico(15, 34); draw_char('1'); draw_char(' '); draw_char('1'); draw_char(' '); draw_char('1');
 
-    TP_appui=0;
+    TP_appui = 0;
 
-    while(1)
+    while (1)
     {
-
-        goto_lico(0,0);
-        draw_string("Marche:");
-        if (MARCHE_AVANT==0)
-            draw_string("AV");
+        /* ---------------------------------------------------------
+         * Ligne 0 : Marche + Badge (comme sur le screen en haut)
+         * --------------------------------------------------------- */
+        goto_lico(0, 0);
+        draw_string((unsigned char*)"Marche: ");
+        if (MARCHE_AVANT == 0)
+            draw_string((unsigned char*)"AV ");
+        else if (MARCHE_ARRIERE == 0)
+            draw_string((unsigned char*)"AR ");
         else
-            if (MARCHE_ARRIERE==0)
-                draw_string("AR");
-            else
-                draw_string("N ");
+            draw_string((unsigned char*)"N  ");
 
-        goto_lico(1,0);
-        draw_string("Siege:");
-        if (SIEGE==0)
-        {draw_char('1');}
+        goto_lico(0, 20);
+        draw_string((unsigned char*)"Badge: ");
+        if (n_octet_badge == 0)
+        {
+            // Aucun badge -> texte fixe
+            draw_string((unsigned char*)"AUCUN       ");
+        }
         else
-        {draw_char('0');}
+        {
+            // Affichage du badge en hexa
+            for (i = 0; i < n_octet_badge; i++)
+            {
+                draw_hex8(badge[i]);
+            }
+            // Efface le reste de la ligne si besoin
+            draw_string((unsigned char*)"   ");
+        }
 
-        goto_lico(2,0);
-        draw_string("Temp. Eau:");
-        draw_hex8(lecture_8bit_analogique(TEMPERATURE_EAU));
-
-        goto_lico(3,0);
-        draw_string("Temp. Huile:");
-        draw_hex8(lecture_8bit_analogique(TEMPERATURE_HUILE));
-
-        goto_lico(4,0);
-        draw_string("Choc:");
-        if (CHOC==0)
+        /* ---------------------------------------------------------
+         * Ligne 1 : Siege + Frein
+         * --------------------------------------------------------- */
+        goto_lico(1, 0);
+        draw_string((unsigned char*)"Siege: ");
+        if (SIEGE == 0)
             draw_char('1');
         else
             draw_char('0');
 
-        // goto_lico(5,0);
-        // draw_string("Vitesse:");
-        // if (VITESSE_PLUS==0)
-        //     vitesse++;
-        // if (VITESSE_MOINS==0)
-        //     vitesse--;
-        // draw_hex8(vitesse);
-        // === Vitesse ===
+        draw_string((unsigned char*)"   Frein: ");
+        if (FREIN_A_MAIN == 0)
+            draw_string((unsigned char*)"ON ");
+        else
+            draw_string((unsigned char*)"OFF");
+
+        /* ---------------------------------------------------------
+         * Ligne 2 : Dessin du chariot (placeholder texte)
+         * --------------------------------------------------------- */
+        goto_lico(2, 10);
+        draw_string((unsigned char*)"[dessin du chariot ici]");
+
+        /* ---------------------------------------------------------
+         * Ligne 4 : Temp Eau et Temp Huile sur la meme ligne
+         * --------------------------------------------------------- */
+        goto_lico(4, 0);
+        draw_string((unsigned char*)"Temp Eau: ");
+        draw_dec8(lecture_8bit_analogique(TEMPERATURE_EAU));
+        draw_char('C');
+
+        goto_lico(4, 20);
+        draw_string((unsigned char*)"Temp Huile: ");
+        draw_dec8(lecture_8bit_analogique(TEMPERATURE_HUILE));
+        draw_char('C');
+
+        /* ---------------------------------------------------------
+         * Ligne 5 : Choc + Vitesse
+         * --------------------------------------------------------- */
         goto_lico(5, 0);
-        draw_string((unsigned char*)"Vitesse:");
+        draw_string((unsigned char*)"Choc: ");
+        if (CHOC == 0)
+            draw_char('1');
+        else
+            draw_char('0');
+
+        draw_string((unsigned char*)"   Vitesse: ");
+
+        // Logique vitesse conservee
         if (VITESSE_PLUS == 0 && vitesse < 255)
             vitesse++;
         if (VITESSE_MOINS == 0 && vitesse > 0)
             vitesse--;
-        draw_dec8(vitesse);
 
+        draw_dec8(vitesse);
+        draw_string((unsigned char*)" km/h");
+
+        /* ---------------------------------------------------------
+         * Ligne 6 : Alerte vitesse (ligne dediee)
+         * --------------------------------------------------------- */
+        goto_lico(6, 0);
         if (vitesse > 30)
         {
-            LED_R = 0; LED_G = 1; LED_B = 1;
-            goto_lico(6, 0);
-            draw_string((unsigned char*)"ALERTE: >30 km/h");
+            LED_R = 0;
+            LED_G = 1;
+            LED_B = 1;
+            draw_string((unsigned char*)"ALERTE: vitesse > 30 km/h ");
         }
         else
         {
-            LED_R = 1; LED_G = 0; LED_B = 1;
-            goto_lico(6, 0);
-            draw_string((unsigned char*)"                 ");
-        }        
-
-        goto_lico(6,0);
-        draw_string("Batterie:");
-        if (BATTERIE_PLUS==0)
-            batterie++;
-        if (BATTERIE_MOINS==0)
-            batterie--;
-        draw_dec8(batterie);
-
-        goto_lico(7,0);
-        if (FREIN_A_MAIN==0)
-            draw_string("((!))");
-        else
-            draw_string("     ");
-
-        goto_lico(8,0);
-        draw_string("Badge:");
-        if (n_octet_badge==0)
-            draw_string(" AUCUN              ");
-        else
-        {
-            for (i=0;i<n_octet_badge;i++)
-            {
-                draw_hex8(badge[i]);
-            }
+            LED_R = 1;
+            LED_G = 0;
+            LED_B = 1;
+            // Efface l ancienne alerte
+            draw_string((unsigned char*)"                         ");
         }
 
-        goto_lico(9,0);
-        draw_string("X-Joystick:");
+        /* ---------------------------------------------------------
+         * Ligne 7 : Joystick X / Y sur la meme ligne
+         * --------------------------------------------------------- */
+        goto_lico(7, 0);
+        draw_string((unsigned char*)"Joystick X:");
         draw_dec8(lecture_8bit_analogique(JOYSTICK_X));
 
-        goto_lico(10,0);
-        draw_string("Y-Joystick:");
+        goto_lico(7, 20);
+        draw_string((unsigned char*)"Y:");
         draw_dec8(lecture_8bit_analogique(JOYSTICK_Y));
 
-        if (TP_appui==1)
+        /* ---------------------------------------------------------
+         * Ligne 8 : Batterie en pourcentage
+         * --------------------------------------------------------- */
+        goto_lico(8, 0);
+        draw_string((unsigned char*)"Batterie: ");
+        if (BATTERIE_PLUS == 0)
+            batterie++;
+        if (BATTERIE_MOINS == 0)
+            batterie--;
+        draw_dec8(batterie);
+        draw_char('%');
+
+        /* ---------------------------------------------------------
+         * Affichage tactile (je te laisse ta logique)
+         * --------------------------------------------------------- */
+        if (TP_appui == 1)
         {
-            goto_lico(0,20);
-            draw_string("x=");
+            goto_lico(10, 0);
+            draw_string((unsigned char*)"x=");
             draw_dec8(TP_x);
-            draw_string(" y=");
+            draw_string((unsigned char*)" y=");
             draw_dec8(TP_y);
-            plot1(TP_x,TP_y);
+            plot1(TP_x, TP_y);
         }
         else
         {
