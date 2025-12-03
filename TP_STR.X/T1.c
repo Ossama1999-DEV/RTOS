@@ -25,7 +25,7 @@ void tache1(void)
     LED_B = 0;
 
     vitesse = 0;
-    batterie = 120;
+    batterie = 100;     // NEW : demarrage a 100 % max
     n_octet_badge = 0;
 
     // Petit repere RVB en bas a droite
@@ -38,7 +38,7 @@ void tache1(void)
     while (1)
     {
         /* ---------------------------------------------------------
-         * Ligne 0 : Marche + Badge (comme sur le screen en haut)
+         * Ligne 0 : Marche + Badge
          * --------------------------------------------------------- */
         goto_lico(0, 0);
         draw_string((unsigned char*)"Marche: ");
@@ -53,17 +53,14 @@ void tache1(void)
         draw_string((unsigned char*)"Badge: ");
         if (n_octet_badge == 0)
         {
-            // Aucun badge -> texte fixe
             draw_string((unsigned char*)"AUCUN       ");
         }
         else
         {
-            // Affichage du badge en hexa
             for (i = 0; i < n_octet_badge; i++)
             {
                 draw_hex8(badge[i]);
             }
-            // Efface le reste de la ligne si besoin
             draw_string((unsigned char*)"   ");
         }
 
@@ -128,6 +125,12 @@ void tache1(void)
         if (VITESSE_MOINS == 0 && vitesse > 0)
             vitesse--;
 
+        // NEW : si frein ON et marche = N -> vitesse forcee a 0
+        if (FREIN_A_MAIN == 0 && MARCHE_AVANT != 0 && MARCHE_ARRIERE != 0)
+        {
+            vitesse = 0;
+        }
+
         draw_dec8(vitesse);
         draw_string((unsigned char*)" km/h");
 
@@ -147,7 +150,6 @@ void tache1(void)
             LED_R = 1;
             LED_G = 0;
             LED_B = 1;
-            // Efface l ancienne alerte
             draw_string((unsigned char*)"                         ");
         }
 
@@ -163,19 +165,25 @@ void tache1(void)
         draw_dec8(lecture_8bit_analogique(JOYSTICK_Y));
 
         /* ---------------------------------------------------------
-         * Ligne 8 : Batterie en pourcentage
+         * Ligne 8 : Batterie en pourcentage (0%..100%)
          * --------------------------------------------------------- */
         goto_lico(8, 0);
         draw_string((unsigned char*)"Batterie: ");
-        if (BATTERIE_PLUS == 0)
+
+        if (BATTERIE_PLUS == 0 && batterie < 100)   // NEW : limite haute
             batterie++;
-        if (BATTERIE_MOINS == 0)
+        if (BATTERIE_MOINS == 0 && batterie > 0)    // NEW : limite basse
             batterie--;
+
+        // Securite si jamais batterie depasse 100 ailleurs
+        if (batterie > 100)                         // NEW : clamp
+            batterie = 100;
+
         draw_dec8(batterie);
         draw_char('%');
 
         /* ---------------------------------------------------------
-         * Affichage tactile (je te laisse ta logique)
+         * Affichage tactile
          * --------------------------------------------------------- */
         if (TP_appui == 1)
         {
