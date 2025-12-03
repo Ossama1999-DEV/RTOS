@@ -81,7 +81,7 @@ void tache1(void)
          * Ligne 2 : Dessin du chariot (placeholder texte)
          * --------------------------------------------------------- */
         goto_lico(2, 10);
-        draw_string((unsigned char*)"[dessin du chariot ici]");
+        draw_string((unsigned char*)"CHARIOT");
 
         /* ---------------------------------------------------------
          * Ligne 4 : Temp Eau et Temp Huile sur la meme ligne
@@ -103,7 +103,13 @@ void tache1(void)
         draw_string((unsigned char*)"Choc: ");
         if (CHOC == 0)
             draw_char('1');
+            LED_R = 0;
+            LED_G = 1;
+            LED_B = 1;
         else
+            LED_R = 1;
+            LED_G = 0;
+            LED_B = 1;        
             draw_char('0');
 
         draw_string((unsigned char*)"   Vitesse: ");
