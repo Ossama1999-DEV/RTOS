@@ -41,15 +41,22 @@ static void send_line_uart(const char *s)
 void tache4(void)
 {
     char buffer[64];
-    unsigned char choc_precedent = 0;
+    unsigned char choc_precedent;
+    unsigned char choc_actuel;
     unsigned char i;
 
     memset(buffer, 0, sizeof(buffer));
 
+    /* On initialise l etat precedent avec l etat courant du bouton */
+    choc_precedent = CHOC;
+
     while (1)
     {
-        /* --- Front montant: nouveau choc detecte --- */
-        if (CHOC == 1 && choc_precedent == 0)
+        /* On lit l etat courant une seule fois */
+        choc_actuel = CHOC;
+
+        /* --- Front descendant: 1 -> 0 (bouton appuye) --- */
+        if (choc_actuel == 0 && choc_precedent == 1)
         {
             send_line_uart("");
             send_line_uart("========================================");
@@ -66,7 +73,6 @@ void tache4(void)
             {
                 for (i = 0; i < n_octet_badge; i++)
                 {
-                    /* Espace + 2 chiffres hexa */
                     snprintf(buffer, sizeof(buffer), "%s%02X",
                              (i == 0) ? "" : " ", (unsigned int)badge[i]);
                     send_string_uart(buffer);
@@ -80,17 +86,12 @@ void tache4(void)
 
             send_line_uart("========================================");
             send_line_uart("");
-
-            choc_precedent = 1;
         }
 
-        /* --- Reinitialisation quand le bouton est relache --- */
-        if (CHOC == 0 && choc_precedent == 1)
-        {
-            choc_precedent = 0;
-        }
+        /* On memorise l etat pour le prochain tour */
+        choc_precedent = choc_actuel;
 
-        /* Laisse tourner librement, sans blocage long */
+        /* Petite pause (anti rebond light) */
         Nop();
         Nop();
     }

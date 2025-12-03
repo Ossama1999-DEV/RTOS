@@ -1,3 +1,9 @@
+/**
+ * @file T1.c
+ * @author DBIBIH O.
+ * @brief TP_STR - Tache 1
+ * @version 8.0
+ */
 #include "T1.h"
 
 void tache1(void)
@@ -22,7 +28,7 @@ void tache1(void)
     batterie = 120;
     n_octet_badge = 0;
 
-    // Petit repere RVB en bas a droite (je laisse comme tu avais)
+    // Petit repere RVB en bas a droite
     goto_lico(13, 34); draw_char('R'); draw_char(' '); draw_char('V'); draw_char(' '); draw_char('B');
     goto_lico(14, 34); draw_char('0'); draw_char(' '); draw_char('0'); draw_char(' '); draw_char('0');
     goto_lico(15, 34); draw_char('1'); draw_char(' '); draw_char('1'); draw_char(' '); draw_char('1');
