@@ -17,7 +17,6 @@ static void send_string_uart(const char *s)
     /* Protection simple du port serie */
     while (RXTX_libre == 0)
     {
-        /* attente active */
     }
     RXTX_libre = 0;
 
@@ -50,7 +49,7 @@ void tache4(void)
     /* On initialise l etat precedent avec l etat courant du bouton */
     choc_precedent = CHOC;
 
-    while (1)
+    while (1) // must use while(RXTX_libre==0); to protect the serial port
     {
         /* On lit l etat courant une seule fois */
         choc_actuel = CHOC;
@@ -91,7 +90,6 @@ void tache4(void)
         /* On memorise l etat pour le prochain tour */
         choc_precedent = choc_actuel;
 
-        /* Petite pause (anti rebond light) */
         Nop();
         Nop();
     }

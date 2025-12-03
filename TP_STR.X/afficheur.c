@@ -1,3 +1,8 @@
+/**
+ * TP_STR - Afficheur graphique LCD
+ * fichier: afficheur.c
+ * Description: fonctions de gestion de l'afficheur graphique LCD
+ */
 #include "afficheur.h"
 
 
@@ -30,7 +35,6 @@ void write_c_aff(unsigned char command)
 unsigned char check_status_ok(void)
 {
     unsigned char res;
-
 
     TRISH=0xFF; // Donn�es en entr�e
     GLCD_CD=1;
@@ -294,7 +298,7 @@ void draw_dec8(unsigned char octet)
 
 void goto_lico(unsigned char ligne, unsigned char colonne)
 {
-    unsigned int adr;//ne pas initialiser les static dans la d�claration
+    unsigned int adr;//ne pas initialiser les static dans la declaration
 
     adr=0x7B00;
     if (ligne>15) ligne=0;
@@ -346,7 +350,7 @@ void plot1(unsigned char x, unsigned char y)
 
     switch(x%6)
     {
-        // Mise � 1 du pixel choisi
+        // Mise a 1 du pixel choisi
         case 0: command(0xFD); break;
         case 1: command(0xFC); break;
         case 2: command(0xFB); break;
@@ -367,7 +371,7 @@ void plot0(unsigned char x, unsigned char y)
 
     switch(x%6)
     {
-        // Mise � 0 du pixel choisi
+        // Mise a 0 du pixel choisi
         case 0: command(0xF5); break;
         case 1: command(0xF4); break;
         case 2: command(0xF3); break;

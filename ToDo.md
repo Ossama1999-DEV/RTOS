@@ -36,12 +36,12 @@
 
 | Task                  | Responsible | Deadline  |
 |-----------------------|-------------|-----------|
-| Initial Setup         |             |           |
-| Requirements & Design |             |           |
-| Development           |             |           |
-| Testing               |             |           |
-| Documentation         |             |           |
-| Deployment            |             |           |
+| Initial Setup         |  Dani       |           |
+| Requirements & Design |  O.Dbibih   |   03.12   |
+| Development           |  O.Dbibih   |   03.12   |
+| Testing               |  O.Dbibih   |   03.12   |
+| Documentation         |  Stan       |           |
+| Deployment            |  Dani       |           |
 
 ## 📝 Notes
 

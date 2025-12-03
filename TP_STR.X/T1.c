@@ -111,9 +111,6 @@ void tache1(void)
             LED_B = 1;
         }
         else {
-            // LED_R = 1;
-            // LED_G = 0;
-            // LED_B = 1;        
             draw_char('0');
         }
 
@@ -135,7 +132,7 @@ void tache1(void)
         draw_string((unsigned char*)" km/h");
 
         /* ---------------------------------------------------------
-         * Ligne 6 : Alerte vitesse (ligne dediee)
+         * Ligne 6 : Alerte vitesse
          * --------------------------------------------------------- */
         goto_lico(6, 0);
         if (vitesse > 30)

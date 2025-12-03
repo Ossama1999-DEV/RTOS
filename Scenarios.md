@@ -1,111 +1,138 @@
-# Scénario RTOS : Chariot Élévateur
+# Scénario RTOS – Chariot Élévateur
 
 ## 1️⃣ Initialisation du système
 
-Appels de fonctions :
-- `initialisation_des_ports()` : configure tous les ports E/S (analogiques et numériques)
-- `initialisation_du_systeme()` : configure le RTOS, les timers, etc.
-- `Init(SEM_CAN)` : initialise les sémaphores (communication entre tâches)
+Au démarrage :
 
-Ensuite :
-- Démarrage du Timer0 (`TMR0ON=1`)
+- `initialisation_des_ports()` configure toutes les E/S :
+  - activation des canaux analogiques nécessaires (joystick, températures, touchpad)
+  - configuration des LEDs en sortie
+  - configuration des ports numériques
+- `initialisation_du_systeme()` initialise le RTOS, les timers et les interruptions.
+- `Init(SEM_CAN)` initialise les sémaphores utilisés entre tâches.
+- Activation du **Timer0** (`TMR0ON = 1`)
 - Activation des interruptions globales (`ei()`)
 
-> 💡 Cela met en route le système temps réel et les tâches du RTOS.
+👉 **Le système temps réel et les tâches sont opérationnels.**
 
 ---
 
 ## 2️⃣ Configuration matérielle
 
-Dans `initialisation_des_ports()` :
-- Désactivation du bus externe et des fonctions analogiques inutiles
-- Activation uniquement des entrées analogiques nécessaires :
-    - Touchpad (`RA0`, `RA1`)
-    - Capteurs de température (`RA2`, `RA3`)
-    - Joystick (`RF5`, `RF6`)
-- Configuration des LEDs (rouge, verte, bleue) en sortie
-- Activation des pull-up internes sur certains ports
+`initialisation_des_ports()` réalise :
 
-> 💡 Le chariot peut ainsi lire ses capteurs et indiquer son état par LED.
+- Désactivation des fonctions analogiques inutiles et du bus externe.
+- Activation uniquement des entrées nécessaires :
+  - Joystick (axes X/Y)
+  - Température eau / huile
+  - Touchpad (si utilisé)
+- LEDs RGB configurées en sortie pour indiquer l’état du chariot.
+- Pull-up internes activés sur certains ports pour stabiliser les entrées.
+
+👉 **Tous les capteurs sont prêts, les voyants aussi.**
 
 ---
 
-## 3️⃣ Lecture des capteurs analogiques
+## 3️⃣ Acquisition des capteurs analogiques
 
-Fonction :
-```c
+La fonction :
+
+```
 unsigned char lecture_8bit_analogique(unsigned char channel)
 ```
-Effectue une conversion analogique-numérique (ADC) sur 8 bits pour :
-- Joystick (axes X/Y)
-- Température moteur / huile
-- Capteur de hauteur du mât
 
-> 💡 Permet au système de connaître les mouvements du joystick, la hauteur du mât et la température du moteur.
+effectue une conversion ADC sur 8 bits pour :
 
----
+- Joystick (X, Y)
+- Température moteur (eau)
+- Température huile
+- Autres capteurs analogiques du système
 
-## 4️⃣ Scénario principal : `scenario_chariot_elevateur()`
-
-Le cœur du comportement automatique du chariot :
-
-### 🟩 a) Phase de démarrage
-- Message : “INITIALISATION DU CHARIOT...”
-- LED verte allumée
-- Petite attente (`attendre(1000)`)
-
-> 💡 Simule le démarrage et la mise sous tension du chariot.
+👉 **Le RTOS lit en continu l’état du joystick et les températures.**
 
 ---
 
-### 🟨 b) Lecture du joystick et mouvement
+## 4️⃣ Scénario principal du chariot (tâche d’affichage T1)
 
-Lecture des axes :
-```c
-joystick_x = lecture_8bit_analogique(JOYSTICK_X);
-joystick_y = lecture_8bit_analogique(JOYSTICK_Y);
+Cette tâche met à jour l’afficheur LCD en continu.
+
+### 🟩 a) Affichage du statut du chariot
+
+Informations affichées :
+- Mode **Marche** : AV / AR / N
+- **Badge** détecté ou message “AUCUN”
+- **Siège** occupé / non occupé
+- **Frein à main** activé ou non
+- Représentation du **chariot**
+- Températures **Eau** et **Huile**
+- **Choc** détecté ou non
+- **Vitesse** en km/h
+- Coordonnées **Joystick X / Y**
+- Niveau de **Batterie** (0 % – 100 %)
+
+👉 L’afficheur reflète en temps réel l’état complet du chariot.
+
+---
+
+### 🟨 b) Gestion de la vitesse
+
+- Les boutons `VITESSE_PLUS` et `VITESSE_MOINS` permettent d’augmenter ou diminuer la vitesse.
+- Si **frein ON** + **Marche = N** → vitesse forcée à `0 km/h`.
+
+👉 Le système empêche le chariot de bouger lors d’un arrêt sécurisé.
+
+---
+
+### 🟥 c) Alerte de vitesse
+
+Si `vitesse > 30` :
+
+- Affichage du message : **ALERTE : vitesse > 30 km/h**
+- LEDs configurées en mode alerte
+
+Sinon : message effacé.
+
+👉 Protection simple contre les excès de vitesse.
+
+---
+
+### 🟦 d) Gestion de la batterie
+
+- Batterie **min = 0 %**
+- Batterie **max = 100 %**
+
+👉 La batterie reste toujours dans des valeurs réalistes.
+
+---
+
+## 5️⃣ Sécurité – Tâche T4 : détection du choc
+
+La tâche 4 surveille le capteur de choc :
+
+- Détection d’un **front descendant** (appui sur le bouton CHOC)
+- Envoi sur UART d’un rapport structuré :
+
 ```
-Actions :
-- Si le joystick est poussé vers l’avant → `avancer_chariot()`
-- Si tiré vers l’arrière → `reculer_chariot()`
-- Sinon → `arreter_chariot()`
-
-> 💡 Le chariot avance, recule ou reste immobile selon la position du joystick.
-
----
-
-### 🟦 c) Contrôle du mât (levage / descente)
-
-Lecture du capteur de hauteur (`CAPTEUR_HAUTEUR`) :
-- Si bas → `lever_materiel()`
-- Si trop haut → `descendre_materiel()`
-- Sinon → `stabiliser_hauteur()`
-
-> 💡 Le mât s’ajuste automatiquement selon la position détectée.
-
----
-
-### 🟥 d) Sécurité – température moteur
-
-Lecture du capteur de température (`CAPTEUR_TEMP_MOTEUR`) :
-- Si > 220 :
-    - Allume LED rouge
-    - Appelle `alerter("SURCHAUFFE MOTEUR !")`
-    - Arrête le chariot
-
-> 💡 Simule une protection thermique du moteur.
-
----
-
-### 🌀 e) Boucle de surveillance continue
-
-Boucle infinie exécutée périodiquement :
-```c
-surveiller_obstacles();
-gerer_vitesse();
-mettre_a_jour_affichage();
-attendre(50);
+========================================
+=          CHOC DETECTE                =
+========================================
+Vitesse : XX km/h
+Badge   : AUCUN ou XX XX XX ...
+========================================
 ```
 
-> 💡 Boucle principale du RTOS : surveiller l’environnement, ajuster la vitesse, rafraîchir l’afficheur LCD, etc.
+👉 Chaque choc déclenche un log propre, sans doublon, lisible sur le moniteur série.
 
+---
+
+## 6️⃣ Boucle continue du RTOS
+
+Chaque tâche s’exécute périodiquement selon l’ordonnancement du RTOS :
+
+- Lecture capteurs
+- Mise à jour de l’affichage
+- Gestion vitesse / frein
+- Surveillance des événements (choc, badge…)
+- Communication série protégée par sémaphore
+
+👉 Le chariot fonctionne comme un vrai système embarqué temps réel.

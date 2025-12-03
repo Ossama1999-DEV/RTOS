@@ -2,7 +2,7 @@
  * File:   semaphore.h
  * Author: Franck
  *
- * Created on 9 février 2015, 16:58
+ * Created on 9 fï¿½vrier 2015, 16:58
  */
 
 #ifndef SEMAPHORE_H
