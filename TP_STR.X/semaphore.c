@@ -1,4 +1,30 @@
+/**
+ * \file semaphore.c
+ * \brief Module de gestion de semaphores
+ * \author DBIBIH Oussama
+ * \version 1.0
+ */
 #include "semaphore.h"
+/*
+ * Module de gestion de semaphores
+ *
+ * Fonctions :
+ *  - Init(sem) : initialise le semaphore et le place en etat libre.
+ *  - P(sem) : operation "wait", bloque tant que la ressource est occupee,
+ *             puis la reserve des qu elle devient libre.
+ *  - V(sem) : operation "signal", libere la ressource.
+ *
+ * Comportement :
+ *  - SEM_CAN  : protege l acces a l interface CAN.
+ *  - SEM_RXTX : protege l acces a la liaison serie.
+ *
+ * Notes d implementation :
+ *  - Val_sem_cna et Val_sem_rxtx sont des semaphores binaires
+ *    (0 = verrouille, 1 = libre).
+ *  - P() utilise une attente active (spinlock) jusqu a disponibilite.
+ *  - V() libere immediatement la ressource.
+ */
+
 
 
 void Init(unsigned char sem)
@@ -22,14 +48,14 @@ void __reentrant P(unsigned char sem)
     switch(sem)
     {
         case SEM_CAN:
-            while (Val_sem_cna < 1) // Tant que le cna est occupé
+            while (Val_sem_cna < 1) // Tant que le cna est occupï¿½
                 ;                   // On attend
-            Val_sem_cna = 0;        // Dès qu'il est libre, on le réserve
+            Val_sem_cna = 0;        // Dï¿½s qu'il est libre, on le rï¿½serve
             break;
         case SEM_RXTX:
-            while (Val_sem_rxtx < 1)    // Tant que la liaison série est occupé
+            while (Val_sem_rxtx < 1)    // Tant que la liaison sï¿½rie est occupï¿½
                 ;                       // On attend
-            Val_sem_rxtx = 0;           // Dès qu'elle est libre, on la réserve
+            Val_sem_rxtx = 0;           // Dï¿½s qu'elle est libre, on la rï¿½serve
             break;
         default:
             ;

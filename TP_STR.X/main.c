@@ -16,7 +16,7 @@ void main()
     Init(SEM_CAN);
     Init(SEM_RXTX);
 
-        // D�marrage du syst�me
+    // D�marrage du syst�me
     T0CONbits.TMR0ON=1; //D�marrage du Timer0
     T0IF=1; // For�age du d�clenchement de la premi�re IT
     ei(); //Activation des interruptions => D�marrage du syst�me
